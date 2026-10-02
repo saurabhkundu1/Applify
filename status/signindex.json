@@ -1,0 +1,1 @@
+{"/etc/issue.net":"Ubuntu 24.04.5 LTS","commandLine":["/home/runner/.local/bin/fdroid signindex"],"endTimestamp":1790943658844,"signed":["repo/index-v1.json","repo/entry.json","archive/index-v1.json","archive/entry.json"],"startTimestamp":1790943657000,"subcommand":"signindex"}

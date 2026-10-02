@@ -1,0 +1,73 @@
+{
+  "repo": {
+    "timestamp": 1790943655000,
+    "version": 20002,
+    "name": "Applify",
+    "icon": "icon.png",
+    "address": "https://saurabhkundu1.github.io/Applify/repo",
+    "description": "Applify Official F-Droid Repository"
+  },
+  "requests": {
+    "install": [],
+    "uninstall": []
+  },
+  "apps": [
+    {
+      "categories": [
+        "Security"
+      ],
+      "suggestedVersionName": "1.0.1",
+      "suggestedVersionCode": "2",
+      "description": "Secure Password Manager with AES-256-GCM encryption.",
+      "issueTracker": "https://github.com/saurabhkundu1/secure-password-manager/issues",
+      "license": "MIT",
+      "name": "Secure Pass",
+      "sourceCode": "https://github.com/saurabhkundu1/secure-password-manager",
+      "summary": "Offline Secure Password Manager",
+      "webSite": "https://github.com/saurabhkundu1/secure-password-manager",
+      "added": 1790943651000,
+      "packageName": "com.applify.securepass",
+      "lastUpdated": 1790943651000,
+      "localized": {
+        "en-US": {
+          "description": "Secure Pass is an offline, high-security encrypted password manager for Android. Store your credentials safely in a local, encrypted vault using AES-256-GCM, unlocked via a 6-digit PIN or Biometrics.\n\nKey Features:\n- \ud83d\udd12 Total Privacy: 100% offline. Zero internet permissions, zero tracking.\n- \ud83d\udee1\ufe0f Military-Grade Encryption: AES-256-GCM encryption with keys derived via PBKDF2 (100,000 iterations).\n- \ud83d\udd22 Secure Access: Mandatory 6-digit master PIN.\n- \ud83d\udd90\ufe0f Biometric Support: Fingerprint unlock with 24-hour PIN re-entry policy.\n- \ud83c\udfa8 Personalized UI: 13 dynamic color palettes with full support for Light and Dark modes.\n- \ud83d\udd0d Search & Favorites: Instantly filter entries or pin important accounts.\n- \ud83c\udfb2 Password Utilities: Built-in generator and real-time strength indicator.\n- \ud83d\udcc1 Encrypted Backups: Securely export and import your vault as encrypted text files.\n\nYour data never leaves your device. Secure, private, and simple.\n",
+          "icon": "icon_Gg-o-S9y8o8Zw-KpWZqX9ls7Ns8Zt92yM2Mts17Zzb4=.png",
+          "name": "Secure Pass",
+          "summary": "Offline, high-security encrypted password manager with biometrics and dynamic th"
+        }
+      }
+    }
+  ],
+  "packages": {
+    "com.applify.securepass": [
+      {
+        "added": 1790943651000,
+        "apkName": "com.applify.securepass_2.apk",
+        "hash": "dfcbc3e32586a562c338cfba8b5f1d84b3c6c6850ea9e90fd572e04fc40175ea",
+        "hashType": "sha256",
+        "minSdkVersion": 26,
+        "packageName": "com.applify.securepass",
+        "sig": "a198a29cf5c26b00e2accffff9ee3834",
+        "signer": "de62e0d386db9b6fc616adf6573f458aac8d04f873007c73b8585fbef0960255",
+        "size": 7922082,
+        "targetSdkVersion": 35,
+        "uses-permission": [
+          [
+            "android.permission.USE_BIOMETRIC",
+            null
+          ],
+          [
+            "android.permission.USE_FINGERPRINT",
+            null
+          ],
+          [
+            "com.applify.securepass.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+            null
+          ]
+        ],
+        "versionCode": 2,
+        "versionName": "1.0.1"
+      }
+    ]
+  }
+}

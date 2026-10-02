@@ -1,0 +1,38 @@
+{
+  "METADATA_VERSION": 20002,
+  "allow_disabled_algorithms": false,
+  "com.applify.securepass_2.apk": {
+    "hash": "dfcbc3e32586a562c338cfba8b5f1d84b3c6c6850ea9e90fd572e04fc40175ea",
+    "hashType": "sha256",
+    "uses-permission": [
+      [
+        "android.permission.USE_BIOMETRIC",
+        null
+      ],
+      [
+        "android.permission.USE_FINGERPRINT",
+        null
+      ],
+      [
+        "com.applify.securepass.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+        null
+      ]
+    ],
+    "uses-permission-sdk-23": [],
+    "features": [],
+    "icons_src": {},
+    "icons": {},
+    "antiFeatures": {},
+    "packageName": "com.applify.securepass",
+    "versionCode": 2,
+    "name": "Secure Pass",
+    "versionName": "1.0.1",
+    "minSdkVersion": 26,
+    "targetSdkVersion": 35,
+    "sig": "a198a29cf5c26b00e2accffff9ee3834",
+    "signer": "de62e0d386db9b6fc616adf6573f458aac8d04f873007c73b8585fbef0960255",
+    "size": 7922082,
+    "apkName": "com.applify.securepass_2.apk",
+    "added": 1790943651.956705
+  }
+}

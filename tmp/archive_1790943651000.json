@@ -1,0 +1,20 @@
+{
+  "repo": {
+    "name": {
+      "en-US": "My First F-Droid Archive Demo"
+    },
+    "description": {
+      "en-US": "These are the apps that have been archived from the main repo."
+    },
+    "icon": {
+      "en-US": {
+        "name": "/icons/icon.png",
+        "sha256": "2730fc643b6e2cdc79dd627a153347537f2e35440bb4e60bbba81f73487f0472",
+        "size": 287927
+      }
+    },
+    "address": "https://saurabhkundu1.github.io/Applify/archive",
+    "timestamp": 1790943651000
+  },
+  "packages": {}
+}
