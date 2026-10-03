@@ -8,13 +8,14 @@
     "--pretty"
   ],
   "disabled": [],
-  "endTimestamp": 1791035593873,
+  "endTimestamp": 1791037103450,
   "failedBuilds": {},
   "fdroiddata": {
-    "commitId": "949b964e9ed36ace2b99f13be9432aea9dc87c11",
+    "commitId": "f17b71f8404ef028fb9fc614920ebf7679a4b254",
     "isDirty": true,
     "modifiedFiles": [
-      ".nojekyll"
+      ".nojekyll",
+      "repo/com.applify.securepass_2.apk"
     ],
     "untrackedFiles": [
       "config.yml",
@@ -31,17 +32,17 @@
     "com.applify.securepass"
   ],
   "stages": {
-    "archive_old_apks archive": 1791035587270,
-    "delete_disabled_builds": 1791035586146,
-    "index.make archive": 1791035587271,
-    "index.make repo": 1791035591245,
-    "prepare_apps archive": 1791035587271,
-    "prepare_apps repo": 1791035590219,
-    "process_apks": 1791035586146,
-    "read_added_date_from_all_apks": 1791035587270,
-    "remove_apks": 1791035587269,
-    "scan_repo_files": 1791035587268
+    "archive_old_apks archive": 1791037096019,
+    "delete_disabled_builds": 1791037093432,
+    "index.make archive": 1791037096020,
+    "index.make repo": 1791037100617,
+    "prepare_apps archive": 1791037096020,
+    "prepare_apps repo": 1791037099592,
+    "process_apks": 1791037093432,
+    "read_added_date_from_all_apks": 1791037096019,
+    "remove_apks": 1791037096018,
+    "scan_repo_files": 1791037096017
   },
-  "startTimestamp": 1791035585000,
+  "startTimestamp": 1791037092000,
   "subcommand": "update"
 }
