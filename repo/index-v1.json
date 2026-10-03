@@ -1,6 +1,6 @@
 {
   "repo": {
-    "timestamp": 1791033530000,
+    "timestamp": 1791034109000,
     "version": 20002,
     "name": "Applify",
     "icon": "icon.png",
@@ -43,7 +43,7 @@
       {
         "added": 1790943651000,
         "apkName": "com.applify.securepass_2.apk",
-        "hash": "71aa57b4e7c54cc78a86051955f524370dc403fdb567129482be2091b9b7793d",
+        "hash": "f73cc796a26936acd2141b09e4b0140b369e5b38f069e31e2eb1d3020500d552",
         "hashType": "sha256",
         "minSdkVersion": 26,
         "packageName": "com.applify.securepass",
