@@ -2,7 +2,7 @@
   "METADATA_VERSION": 20002,
   "allow_disabled_algorithms": false,
   "com.applify.securepass_2.apk": {
-    "hash": "dfcbc3e32586a562c338cfba8b5f1d84b3c6c6850ea9e90fd572e04fc40175ea",
+    "hash": "71aa57b4e7c54cc78a86051955f524370dc403fdb567129482be2091b9b7793d",
     "hashType": "sha256",
     "uses-permission": [
       [
@@ -33,6 +33,6 @@
     "signer": "de62e0d386db9b6fc616adf6573f458aac8d04f873007c73b8585fbef0960255",
     "size": 7922082,
     "apkName": "com.applify.securepass_2.apk",
-    "added": 1790943651.956705
+    "added": 1790943651.0
   }
 }

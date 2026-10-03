@@ -8,10 +8,20 @@
     "--pretty"
   ],
   "disabled": [],
-  "endTimestamp": 1790943657138,
+  "endTimestamp": 1791033533323,
   "failedBuilds": {},
-  "jarsigner": "/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64/bin/jarsigner",
-  "keytool": "/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64/bin/keytool",
+  "fdroiddata": {
+    "commitId": "d59dc3e3e912f976b7cdd2b8447544ab079eddda",
+    "isDirty": true,
+    "modifiedFiles": [
+      ".nojekyll",
+      "repo/.nojekyll",
+      "repo/com.applify.securepass_2.apk"
+    ],
+    "untrackedFiles": []
+  },
+  "jarsigner": "/usr/bin/jarsigner",
+  "keytool": "/usr/bin/keytool",
   "needsUpdate": [],
   "noPackages": [
     "com.applify.securepass"
@@ -20,17 +30,17 @@
     "com.applify.securepass"
   ],
   "stages": {
-    "archive_old_apks archive": 1790943651958,
-    "delete_disabled_builds": 1790943651355,
-    "index.make archive": 1790943651959,
-    "index.make repo": 1790943655015,
-    "prepare_apps archive": 1790943651958,
-    "prepare_apps repo": 1790943654223,
-    "process_apks": 1790943651355,
-    "read_added_date_from_all_apks": 1790943651958,
-    "remove_apks": 1790943651957,
-    "scan_repo_files": 1790943651956
+    "archive_old_apks archive": 1791033525813,
+    "delete_disabled_builds": 1791033522075,
+    "index.make archive": 1791033525814,
+    "index.make repo": 1791033530494,
+    "prepare_apps archive": 1791033525814,
+    "prepare_apps repo": 1791033529470,
+    "process_apks": 1791033522076,
+    "read_added_date_from_all_apks": 1791033525813,
+    "remove_apks": 1791033525812,
+    "scan_repo_files": 1791033525811
   },
-  "startTimestamp": 1790943651000,
+  "startTimestamp": 1791033521000,
   "subcommand": "update"
 }
