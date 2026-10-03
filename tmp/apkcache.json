@@ -2,7 +2,7 @@
   "METADATA_VERSION": 20002,
   "allow_disabled_algorithms": false,
   "com.applify.securepass_2.apk": {
-    "hash": "f73cc796a26936acd2141b09e4b0140b369e5b38f069e31e2eb1d3020500d552",
+    "hash": "6eca247c4ea188056d51c9290992b3dd32a42f2dc68add3fb193ef73a7fd4429",
     "hashType": "sha256",
     "uses-permission": [
       [

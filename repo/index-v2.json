@@ -14,7 +14,7 @@
       }
     },
     "address": "https://saurabhkundu1.github.io/Applify/repo",
-    "timestamp": 1791034109000,
+    "timestamp": 1791035267000,
     "categories": {
       "Security": {
         "name": {
@@ -54,11 +54,11 @@
         "preferredSigner": "de62e0d386db9b6fc616adf6573f458aac8d04f873007c73b8585fbef0960255"
       },
       "versions": {
-        "f73cc796a26936acd2141b09e4b0140b369e5b38f069e31e2eb1d3020500d552": {
+        "6eca247c4ea188056d51c9290992b3dd32a42f2dc68add3fb193ef73a7fd4429": {
           "added": 1790943651000,
           "file": {
             "name": "/com.applify.securepass_2.apk",
-            "sha256": "f73cc796a26936acd2141b09e4b0140b369e5b38f069e31e2eb1d3020500d552",
+            "sha256": "6eca247c4ea188056d51c9290992b3dd32a42f2dc68add3fb193ef73a7fd4429",
             "size": 7922082
           },
           "manifest": {
