@@ -1,16 +1,16 @@
 {
   "repo": {
-    "timestamp": 1791039993000
+    "timestamp": 1791133159000
   },
   "packages": {
     "com.applify.securepass": {
       "versions": {
         "f73cc796a26936acd2141b09e4b0140b369e5b38f069e31e2eb1d3020500d552": null,
-        "497376d3c0104aad5efee8a5267f394044fd25962a1be447c88ec7a0da81079a": {
+        "a930f15a514aa25182dceeed273ea54bb7d5f2dfd6b2f8ab7dbc3c2a696d4925": {
           "added": 1790943651000,
           "file": {
             "name": "/com.applify.securepass_2.apk",
-            "sha256": "497376d3c0104aad5efee8a5267f394044fd25962a1be447c88ec7a0da81079a",
+            "sha256": "a930f15a514aa25182dceeed273ea54bb7d5f2dfd6b2f8ab7dbc3c2a696d4925",
             "size": 7922082
           },
           "manifest": {
