@@ -1,0 +1,13 @@
+Categories:
+  - Weather
+License: GPL-3.0
+WebSite: "https://github.com/saurabhkundu1/skycast-weather"
+SourceCode: "https://github.com/saurabhkundu1/skycast-weather"
+IssueTracker: "https://github.com/saurabhkundu1/skycast-weather/issues"
+Name: "Skycast"
+Summary: "Modern weather app with graphs and thoughtful data visualization"
+Description: |-
+  Skycast transforms and visualizes weather data from Open-Meteo.com to give you essential weather information at a glance, while allowing you to dive deeper with graphs.
+AutoName: "Skycast"
+CurrentVersion: "1.0.0"
+CurrentVersionCode: 1

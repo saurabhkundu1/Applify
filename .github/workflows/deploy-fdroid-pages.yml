@@ -1,0 +1,204 @@
+name: Deploy F-Droid Repo and GitHub Pages
+
+on:
+  repository_dispatch:
+    types: [new_release]
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build_and_deploy:
+    name: Build F-Droid Index & Deploy Pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python & JDK
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install fdroidserver & Android build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fdroidserver aapt apksigner || pip install fdroidserver
+
+      - name: Handle Repository Dispatch & Verify APK
+        if: github.event_name == 'repository_dispatch'
+        shell: bash
+        run: |
+          echo "=== Processing repository_dispatch payload ==="
+          
+          SOURCE_REPO="${{ github.event.client_payload.source_repo }}"
+          PACKAGE_NAME="${{ github.event.client_payload.package_name }}"
+          VERSION_NAME="${{ github.event.client_payload.version }}"
+          VERSION_CODE="${{ github.event.client_payload.version_code }}"
+          TAG_NAME="${{ github.event.client_payload.tag }}"
+          ASSET_NAME="${{ github.event.client_payload.asset_name }}"
+
+          # Fallbacks if alternate payload keys are used
+          if [ -z "$PACKAGE_NAME" ]; then PACKAGE_NAME="${{ github.event.client_payload.app }}"; fi
+          if [ -z "$VERSION_NAME" ]; then VERSION_NAME="${{ github.event.client_payload.version_name }}"; fi
+          if [ -z "$TAG_NAME" ]; then TAG_NAME="${{ github.event.client_payload.tag_name }}"; fi
+          if [ -z "$ASSET_NAME" ]; then ASSET_NAME="${{ github.event.client_payload.apk_name }}"; fi
+
+          echo "Payload details:"
+          echo "  Source Repo:  $SOURCE_REPO"
+          echo "  Package Name: $PACKAGE_NAME"
+          echo "  Version Name: $VERSION_NAME"
+          echo "  Version Code: $VERSION_CODE"
+          echo "  Tag Name:     $TAG_NAME"
+          echo "  Asset Name:   $ASSET_NAME"
+
+          # 1. Validate required payload fields
+          if [ -z "$SOURCE_REPO" ] || [ -z "$PACKAGE_NAME" ] || [ -z "$VERSION_NAME" ] || [ -z "$VERSION_CODE" ] || [ -z "$TAG_NAME" ] || [ -z "$ASSET_NAME" ]; then
+            echo "Error: Missing required fields in repository_dispatch payload!"
+            exit 1
+          fi
+
+          # 2. Validate source repository whitelist
+          ALLOWED_REPOS="saurabhkundu1/skycast-weather saurabhkundu1/secure-password-manager"
+          if [[ ! " $ALLOWED_REPOS " =~ " $SOURCE_REPO " ]]; then
+            echo "Error: Unauthorized or unsupported source repository: $SOURCE_REPO"
+            exit 1
+          fi
+
+          # 3. Validate package ID whitelist
+          ALLOWED_PACKAGES="com.applify.skycast com.applify.securepass"
+          if [[ ! " $ALLOWED_PACKAGES " =~ " $PACKAGE_NAME " ]]; then
+            echo "Error: Invalid or unexpected package ID: $PACKAGE_NAME"
+            exit 1
+          fi
+
+          # 4. Construct download URL and fetch release APK
+          DOWNLOAD_URL="https://github.com/${SOURCE_REPO}/releases/download/${TAG_NAME}/${ASSET_NAME}"
+          echo "Downloading APK from: $DOWNLOAD_URL"
+          
+          mkdir -p tmp
+          TMP_APK="tmp/downloaded_${PACKAGE_NAME}.apk"
+          
+          curl -L -f -o "$TMP_APK" "$DOWNLOAD_URL" || {
+            echo "Error: Failed to download asset from $DOWNLOAD_URL"
+            exit 1
+          }
+
+          if [ ! -s "$TMP_APK" ]; then
+            echo "Error: Downloaded APK file is empty!"
+            exit 1
+          fi
+
+          # 5. Verify APK structure and signature
+          if ! zip -T "$TMP_APK" >/dev/null 2>&1; then
+            echo "Error: Downloaded file is not a valid zip/APK archive!"
+            exit 1
+          fi
+
+          if command -v apksigner >/dev/null 2>&1; then
+            apksigner verify "$TMP_APK" || {
+              echo "Error: APK signature verification failed!"
+              exit 1
+            }
+          fi
+
+          # 6. Verify actual Application ID, version name and version code
+          if command -v aapt >/dev/null 2>&1; then
+            BADGING=$(aapt dump badging "$TMP_APK")
+            ACTUAL_PKG=$(echo "$BADGING" | grep "package: name=" | cut -d"'" -f2)
+            ACTUAL_VER_CODE=$(echo "$BADGING" | grep "package: name=" | cut -d"'" -f4)
+            ACTUAL_VER_NAME=$(echo "$BADGING" | grep "package: name=" | cut -d"'" -f6)
+
+            echo "Extracted APK Badging:"
+            echo "  Package ID:   $ACTUAL_PKG"
+            echo "  Version Code: $ACTUAL_VER_CODE"
+            echo "  Version Name: $ACTUAL_VER_NAME"
+
+            if [ "$ACTUAL_PKG" != "$PACKAGE_NAME" ]; then
+              echo "Error: APK package ID ($ACTUAL_PKG) does not match expected payload ($PACKAGE_NAME)!"
+              exit 1
+            fi
+
+            if [ "$ACTUAL_VER_CODE" != "$VERSION_CODE" ]; then
+              echo "Error: APK version code ($ACTUAL_VER_CODE) does not match payload ($VERSION_CODE)!"
+              exit 1
+            fi
+
+            if [ "$ACTUAL_VER_NAME" != "$VERSION_NAME" ]; then
+              echo "Error: APK version name ($ACTUAL_VER_NAME) does not match payload ($VERSION_NAME)!"
+              exit 1
+            fi
+          fi
+
+          # 7. Copy verified APK to repo directory
+          mkdir -p repo
+          TARGET_APK="repo/${PACKAGE_NAME}_${VERSION_CODE}.apk"
+          cp "$TMP_APK" "$TARGET_APK"
+          echo "Successfully verified and imported $TARGET_APK"
+
+      - name: Ensure Metadata Exists
+        shell: bash
+        run: |
+          mkdir -p metadata
+          if [ ! -f "metadata/com.applify.skycast.yml" ]; then
+            cat << 'EOF' > metadata/com.applify.skycast.yml
+          Categories:
+            - Weather
+          License: GPL-3.0
+          WebSite: "https://github.com/saurabhkundu1/skycast-weather"
+          SourceCode: "https://github.com/saurabhkundu1/skycast-weather"
+          IssueTracker: "https://github.com/saurabhkundu1/skycast-weather/issues"
+          Name: "Skycast"
+          Summary: "Modern weather app with graphs and thoughtful data visualization"
+          Description: |-
+            Skycast transforms and visualizes weather data from Open-Meteo.com to give you essential weather information at a glance, while allowing you to dive deeper with graphs.
+          AutoName: "Skycast"
+          CurrentVersion: "1.0.0"
+          CurrentVersionCode: 1
+          EOF
+          fi
+
+      - name: Update F-Droid Repository Index
+        shell: bash
+        run: |
+          fdroid update --create-metadata --nosign || fdroid update --nosign || true
+
+      - name: Commit Updated Repo Artifacts to Git
+        if: github.event_name == 'repository_dispatch'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add metadata/ repo/ index* entry* status/ icons/ || true
+          git diff --staged --quiet || git commit -m "auto: import and publish release for ${{ github.event.client_payload.package_name || 'app' }}"
+          git push origin main || echo "Push skipped or failed"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

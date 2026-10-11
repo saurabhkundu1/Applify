@@ -31,4 +31,32 @@
 			<permissions>USE_BIOMETRIC,USE_FINGERPRINT,com.applify.securepass.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION</permissions>
 		</package>
 	</application>
+	<application id="com.applify.skycast">
+		<id>com.applify.skycast</id>
+		<added>2026-10-11</added>
+		<lastupdated>2026-10-11</lastupdated>
+		<name>Skycast</name>
+		<summary>Modern weather app with graphs and thoughtful data visualization</summary>
+		<desc>Skycast transforms and visualizes weather data from Open-Meteo.com to give you essential weather information at a glance, while allowing you to dive deeper with graphs.</desc>
+		<license>GPL-3.0</license>
+		<categories>Weather</categories>
+		<category>Weather</category>
+		<web>https://github.com/saurabhkundu1/skycast-weather</web>
+		<source>https://github.com/saurabhkundu1/skycast-weather</source>
+		<tracker>https://github.com/saurabhkundu1/skycast-weather/issues</tracker>
+		<marketversion>1.0.0</marketversion>
+		<marketvercode>1</marketvercode>
+		<package>
+			<version>1.0.0</version>
+			<versioncode>1</versioncode>
+			<apkname>com.applify.skycast_1.apk</apkname>
+			<hash type="sha256">e77b9ccc1b099ee5ad6077c31a31db8d4cfa984dfa06c1989039d6437e982764</hash>
+			<size>3370686</size>
+			<sdkver>26</sdkver>
+			<targetSdkVersion>35</targetSdkVersion>
+			<added>2026-10-11</added>
+			<sig>a198a29cf5c26b00e2accffff9ee3834</sig>
+			<permissions>INTERNET,ACCESS_NETWORK_STATE</permissions>
+		</package>
+	</application>
 </fdroid>

@@ -4,51 +4,7 @@
   "index": {
     "name": "/index-v2.json",
     "sha256": "938ec80b19d29a1a32716276d84ef4594692d4891a42025d3b907c6645729f77",
-    "size": 2758,
-    "numPackages": 1
-  },
-  "diffs": {
-    "1790943655000": {
-      "name": "/diff/1790943655000.json",
-      "sha256": "033736f29c8ef979d4568b8399e0cbf9ebed4029baeeb1feb129202105dafe86",
-      "size": 1277,
-      "numPackages": 1
-    },
-    "1791033530000": {
-      "name": "/diff/1791033530000.json",
-      "sha256": "d4f0f45e074bb8cffce7a32c3d5fd35383d6fea6514d30e94516334aaae6a060",
-      "size": 1277,
-      "numPackages": 1
-    },
-    "1791034109000": {
-      "name": "/diff/1791034109000.json",
-      "sha256": "a303ae4ed6ba76989d81f85ab9a38512b449095dd26129c6073063d45ae66a38",
-      "size": 1277,
-      "numPackages": 1
-    },
-    "1791035267000": {
-      "name": "/diff/1791035267000.json",
-      "sha256": "64955fdd815efad7cb41b11dab03876e6abf66e54ffb1a938ae2522fa8ac82df",
-      "size": 1277,
-      "numPackages": 1
-    },
-    "1791035591000": {
-      "name": "/diff/1791035591000.json",
-      "sha256": "64955fdd815efad7cb41b11dab03876e6abf66e54ffb1a938ae2522fa8ac82df",
-      "size": 1277,
-      "numPackages": 1
-    },
-    "1791037100000": {
-      "name": "/diff/1791037100000.json",
-      "sha256": "9b5eb149eb28c0e937c08b51f2fbbd791c0a81f468d0b53aa2f9ffaeeaeab831",
-      "size": 1277,
-      "numPackages": 1
-    },
-    "1791039993000": {
-      "name": "/diff/1791039993000.json",
-      "sha256": "9b5eb149eb28c0e937c08b51f2fbbd791c0a81f468d0b53aa2f9ffaeeaeab831",
-      "size": 1277,
-      "numPackages": 1
-    }
+    "size": 3820,
+    "numPackages": 2
   }
 }
