@@ -180,6 +180,12 @@ jobs:
         shell: bash
         run: |
           fdroid update --create-metadata --nosign || fdroid update --nosign || true
+          if [ -f "repo/index-v1.json" ]; then
+            cp -f repo/index-v1.json index-v1.json 2>/dev/null || true
+            cp -f repo/index-v2.json index-v2.json 2>/dev/null || true
+            cp -f repo/entry.json entry.json 2>/dev/null || true
+            cp -f repo/index.xml index.xml 2>/dev/null || true
+          fi
 
       - name: Commit Updated Repo Artifacts to Git
         if: github.event_name == 'repository_dispatch'
