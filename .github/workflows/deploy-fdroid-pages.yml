@@ -176,43 +176,121 @@ jobs:
           EOF
           fi
 
-      - name: Update F-Droid Repository Index
+      - name: Update & Verify F-Droid Repository Index
         shell: bash
         env:
           REPO_KEYSTORE_BASE64: ${{ secrets.REPO_KEYSTORE_BASE64 }}
-          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS || 'Kiyash@072026' }}
-          KEY_PASS: ${{ secrets.KEY_PASS || 'Kiyash@072026' }}
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+          KEY_PASS: ${{ secrets.KEY_PASS }}
         run: |
-          fdroid update --create-metadata --nosign || fdroid update --nosign || true
-          if [ -d "repo" ]; then
-            cd repo
-            fdroid update --create-metadata --nosign || fdroid update --nosign || true
-            cd ..
+          set -euo pipefail
+
+          echo "=== 1. Validating Repository Signing Secrets ==="
+          if [ -z "$REPO_KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASS" ] || [ -z "$KEY_PASS" ]; then
+            echo "Error: REPO_KEYSTORE_BASE64, KEYSTORE_PASS, and KEY_PASS secrets are required for secure publishing!"
+            exit 1
           fi
-          if [ -f "repo/index-v1.json" ]; then
-            cp -f repo/index-v1.json index-v1.json 2>/dev/null || true
-            cp -f repo/index-v2.json index-v2.json 2>/dev/null || true
-            cp -f repo/entry.json entry.json 2>/dev/null || true
-            cp -f repo/index.xml index.xml 2>/dev/null || true
-            if command -v jar >/dev/null 2>&1; then
-              # Rebuild clean JAR archives
-              jar -cvf repo/index-v1.jar index-v1.json 2>/dev/null || true
-              jar -cvf repo/index.jar index-v2.json 2>/dev/null || true
-              jar -cvf repo/entry.jar entry.json 2>/dev/null || true
 
-              if [ -n "$REPO_KEYSTORE_BASE64" ]; then
-                echo "$REPO_KEYSTORE_BASE64" | base64 -d > keystore.jks
-                jarsigner -keystore keystore.jks -storepass "$KEYSTORE_PASS" -keypass "$KEY_PASS" -digestalg SHA256 -sigalg SHA256withRSA -sigfile SECUREPA repo/index-v1.jar securepass || true
-                jarsigner -keystore keystore.jks -storepass "$KEYSTORE_PASS" -keypass "$KEY_PASS" -digestalg SHA256 -sigalg SHA256withRSA -sigfile SECUREPA repo/index.jar securepass || true
-                jarsigner -keystore keystore.jks -storepass "$KEYSTORE_PASS" -keypass "$KEY_PASS" -digestalg SHA256 -sigalg SHA256withRSA -sigfile SECUREPA repo/entry.jar securepass || true
-                rm -f keystore.jks
-              fi
+          echo "Decoding keystore..."
+          echo "$REPO_KEYSTORE_BASE64" | base64 -d > keystore.jks
+          if [ ! -s keystore.jks ]; then
+            echo "Error: Base64 keystore decoding failed or produced empty file!"
+            exit 1
+          fi
 
-              cp -f repo/index-v1.jar index-v1.jar 2>/dev/null || true
-              cp -f repo/index.jar index.jar 2>/dev/null || true
-              cp -f repo/entry.jar entry.jar 2>/dev/null || true
+          EXPECTED_FINGERPRINT="DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255"
+          ACTUAL_FP=$(keytool -list -v -keystore keystore.jks -storepass "$KEYSTORE_PASS" -alias "securepass" 2>/dev/null | sed -n 's/^[[:space:]]*SHA256:[[:space:]]*//p' | head -n 1 | tr -d ':' | tr 'a-z' 'A-Z')
+          if [ -z "$ACTUAL_FP" ]; then
+            echo "Error: Could not extract SHA-256 fingerprint for alias 'securepass' from keystore!"
+            rm -f keystore.jks
+            exit 1
+          fi
+          if [ "$ACTUAL_FP" != "$EXPECTED_FINGERPRINT" ]; then
+            echo "Error: Keystore SHA-256 fingerprint ($ACTUAL_FP) does not match expected repository key ($EXPECTED_FINGERPRINT)!"
+            rm -f keystore.jks
+            exit 1
+          fi
+
+          echo "=== 2. Generating Index via F-Droid Server Toolchain ==="
+          cat << EOF > config.yml
+          repo_name: "Applify"
+          repo_icon: "icon.png"
+          repo_description: "Applify Official F-Droid Repository"
+          repo_url: "https://saurabhkundu1.github.io/Applify/repo"
+          keystore: "keystore.jks"
+          repo_keyalias: "securepass"
+          keystorepass: "$KEYSTORE_PASS"
+          keypass: "$KEY_PASS"
+          EOF
+
+          fdroid update --create-metadata
+          rm -f keystore.jks config.yml
+
+          echo "=== 3. Synchronizing Root & Repo Artifacts ==="
+          if [ ! -f "repo/index-v1.json" ] || [ ! -f "repo/index-v1.jar" ]; then
+            echo "Error: F-Droid update failed to generate required index artifacts!"
+            exit 1
+          fi
+
+          cp -f repo/index-v1.json index-v1.json
+          if [ -f "repo/index-v2.json" ]; then cp -f repo/index-v2.json index-v2.json; fi
+          if [ -f "repo/entry.json" ]; then cp -f repo/entry.json entry.json; fi
+          if [ -f "repo/index.xml" ]; then cp -f repo/index.xml index.xml; fi
+          cp -f repo/index-v1.jar index-v1.jar
+          if [ -f "repo/index.jar" ]; then cp -f repo/index.jar index.jar; fi
+          if [ -f "repo/entry.jar" ]; then cp -f repo/entry.jar entry.jar; fi
+
+          echo "=== 4. Rigorous Signature, Fingerprint & Consistency Audit ==="
+          verify_jar() {
+            local jar_path="$1"
+            local json_inside="$2"
+            local json_disk="$3"
+
+            echo "Auditing $jar_path..."
+            if [ ! -f "$jar_path" ]; then
+              echo "Error: Required artifact $jar_path is missing!"
+              exit 1
             fi
-          fi
+
+            if ! jar tf "$jar_path" | grep -qE "^META-INF/.*\.SF$"; then
+              echo "Error: $jar_path is missing signature files (unsigned JAR)!"
+              exit 1
+            fi
+
+            VERIFY_OUT=$(jarsigner -verify "$jar_path" 2>&1)
+            if ! echo "$VERIFY_OUT" | grep -q "jar verified."; then
+              echo "Error: Jarsigner verification failed for $jar_path!"
+              echo "$VERIFY_OUT"
+              exit 1
+            fi
+
+            CERT_FP=$(keytool -printcert -jarfile "$jar_path" 2>/dev/null | sed -n 's/^[[:space:]]*SHA256:[[:space:]]*//p' | head -n 1 | tr -d ':' | tr 'a-z' 'A-Z')
+            if [ -z "$CERT_FP" ]; then
+              echo "Error: Could not extract SHA-256 certificate fingerprint from $jar_path!"
+              exit 1
+            fi
+            if [ "$CERT_FP" != "$EXPECTED_FINGERPRINT" ]; then
+              echo "Error: Certificate fingerprint ($CERT_FP) for $jar_path does not match repository key ($EXPECTED_FINGERPRINT)!"
+              exit 1
+            fi
+
+            mkdir -p tmp_check
+            unzip -q -o "$jar_path" "$json_inside" -d tmp_check
+            HASH_JAR=$(sha256sum "tmp_check/$json_inside" | awk '{print $1}')
+            HASH_DISK=$(sha256sum "$json_disk" | awk '{print $1}')
+            rm -rf tmp_check
+
+            if [ "$HASH_JAR" != "$HASH_DISK" ]; then
+              echo "Error: Embedded $json_inside hash ($HASH_JAR) in $jar_path does not match disk hash ($HASH_DISK)!"
+              exit 1
+            fi
+
+            echo "Verified $jar_path passed signature, fingerprint, and JSON consistency checks."
+          }
+
+          verify_jar "repo/index-v1.jar" "index-v1.json" "repo/index-v1.json"
+          if [ -f "repo/index.jar" ]; then verify_jar "repo/index.jar" "index.xml" "repo/index.xml"; fi
+          if [ -f "repo/entry.jar" ]; then verify_jar "repo/entry.jar" "entry.json" "repo/entry.json"; fi
 
       - name: Commit Updated Repo Artifacts to Git
         if: github.event_name == 'repository_dispatch'
@@ -220,9 +298,19 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add metadata/ repo/ index* entry* status/ icons/ || true
-          git diff --staged --quiet || git commit -m "auto: import and publish release for ${{ github.event.client_payload.package_name || 'app' }}"
-          git push origin main || echo "Push skipped or failed"
+          if [ -d "metadata" ]; then git add metadata/; fi
+          if [ -d "repo" ]; then git add repo/; fi
+          if [ -d "status" ]; then git add status/; fi
+          if [ -d "icons" ]; then git add icons/; fi
+          ls index* >/dev/null 2>&1 && git add index*
+          ls entry* >/dev/null 2>&1 && git add entry*
+
+          if ! git diff --staged --quiet; then
+            git commit -m "auto: import and publish release for ${{ github.event.client_payload.package_name || 'app' }}"
+            git push origin main
+          else
+            echo "No changes to commit"
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
