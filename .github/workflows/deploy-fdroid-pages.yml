@@ -178,6 +178,10 @@ jobs:
 
       - name: Update F-Droid Repository Index
         shell: bash
+        env:
+          REPO_KEYSTORE_BASE64: ${{ secrets.REPO_KEYSTORE_BASE64 }}
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS || 'Kiyash@072026' }}
+          KEY_PASS: ${{ secrets.KEY_PASS || 'Kiyash@072026' }}
         run: |
           fdroid update --create-metadata --nosign || fdroid update --nosign || true
           if [ -d "repo" ]; then
@@ -191,9 +195,19 @@ jobs:
             cp -f repo/entry.json entry.json 2>/dev/null || true
             cp -f repo/index.xml index.xml 2>/dev/null || true
             if command -v jar >/dev/null 2>&1; then
-              jar -uf repo/index-v1.jar index-v1.json 2>/dev/null || true
-              jar -uf repo/index.jar index-v2.json 2>/dev/null || true
-              jar -uf repo/entry.jar entry.json 2>/dev/null || true
+              # Rebuild clean JAR archives
+              jar -cvf repo/index-v1.jar index-v1.json 2>/dev/null || true
+              jar -cvf repo/index.jar index-v2.json 2>/dev/null || true
+              jar -cvf repo/entry.jar entry.json 2>/dev/null || true
+
+              if [ -n "$REPO_KEYSTORE_BASE64" ]; then
+                echo "$REPO_KEYSTORE_BASE64" | base64 -d > keystore.jks
+                jarsigner -keystore keystore.jks -storepass "$KEYSTORE_PASS" -keypass "$KEY_PASS" -digestalg SHA256 -sigalg SHA256withRSA -sigfile SECUREPA repo/index-v1.jar securepass || true
+                jarsigner -keystore keystore.jks -storepass "$KEYSTORE_PASS" -keypass "$KEY_PASS" -digestalg SHA256 -sigalg SHA256withRSA -sigfile SECUREPA repo/index.jar securepass || true
+                jarsigner -keystore keystore.jks -storepass "$KEYSTORE_PASS" -keypass "$KEY_PASS" -digestalg SHA256 -sigalg SHA256withRSA -sigfile SECUREPA repo/entry.jar securepass || true
+                rm -f keystore.jks
+              fi
+
               cp -f repo/index-v1.jar index-v1.jar 2>/dev/null || true
               cp -f repo/index.jar index.jar 2>/dev/null || true
               cp -f repo/entry.jar entry.jar 2>/dev/null || true
