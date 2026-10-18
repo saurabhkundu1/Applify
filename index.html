@@ -1,76 +1,91 @@
-<!-- auto-generated - fdroid index updates will overwrite this file -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-    <meta content="width=device-width; initial-scale=1.0; minimum-scale=0.5; maximum-scale=2.0; user-scalable=1;" name="viewport">
-    <title>Applify - F-Droid Repository</title>
-    <base href="index.html">
-    <link href="index.css" rel="stylesheet" type="text/css">
-    <link href="icons/icon.png" rel="icon" type="image/png">
-    <link href="icons/icon.png" rel="shortcut icon" type="image/png">
-    <meta content="Applify" property="og:site_name">
-    <meta content="Applify" property="og:title">
-    <meta content="Applify Official F-Droid Repository" property="og:description">
-    <meta content="index,nofollow" name="robots">
-  </head>
-  <body>
-    <h2>Applify Official F-Droid Repository</h2>
-    <div id="intro">
-      <p style="margin-bottom:.2em;">
-        <span style="float:right;width:100px;margin-left:.5em;">
-          <a href="index.png" title="QR: test">
-            <img alt="QR: test" src="index.png" width="100">
-          </a>
-        </span>
-        Welcome to <strong>Applify</strong> — the official open-source distribution repository for Android applications developed by Saurabh Kundu.
-        <br><br>
-        Currently it serves <kbd>2</kbd> applications. To add this repository to your F-Droid client (F-Droid, Droid-ify, Neo Store, or Obtainium), scan the QR code or use the link below:
-      </p>
-      <p class="center" style="margin-top:.5em">
-        <a class="add-repository" href="https://fdroid.link/#https://saurabhkundu1.github.io/Applify/repo?fingerprint=DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" style="display:inline-block;padding:.65em 1em;margin:.5em;background:#2457a7;color:white;border-radius:.4em;text-decoration:none;font-weight:bold">
-          Add this repository to F-Droid
-        </a>
-        <br>
-        <a href="https://fdroid.link/#https://saurabhkundu1.github.io/Applify/repo?fingerprint=DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255">
-          <code style="color:#000000;font-weight:bold;">
-            https://saurabhkundu1.github.io/Applify/repo
-          </code>
-        </a>
-      </p>
-      <p>
-        Repository Signing Key Fingerprint (SHA-256):
-        <br>
-        <blockcode style="color:#000000;font-weight:bold;">
-          DE 62 E0 D3 86 DB 9B 6F C6 16 AD F6 57 3F 45 8A AC 8D 04 F8 73 00 7C 73 B8 58 5F BE F0 96 02 55
-        </blockcode>
-      </p>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123c63">
+  <meta name="description" content="Applify: Android apps by Saurabh Kundu, available from the Applify F-Droid repository.">
+  <title>Applify — Android apps</title>
+  <style>
+    :root { color-scheme: light dark; font: 16px/1.55 system-ui, sans-serif; }
+    body { margin: 0; background: #f3f6fa; color: #152337; }
+    header { padding: 2.5rem max(1.2rem, calc((100% - 960px)/2)); background: #123c63; color: white; }
+    header h1 { margin: 0; font-size: clamp(2rem, 6vw, 3rem); }
+    main { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.2rem 3rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: .8rem; margin: 1rem 0 2rem; }
+    .button { display: inline-block; padding: .7rem 1rem; border-radius: .55rem; background: #1769aa; color: white; text-decoration: none; font-weight: 650; }
+    .button.secondary { background: #e2ecf5; color: #123c63; }
+    .apps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 390px), 1fr)); gap: 1rem; }
+    article { display: flex; gap: 1rem; padding: 1.1rem; border: 1px solid #d5dee8; border-radius: .8rem; background: white; }
+    article img { width: 64px; height: 64px; border-radius: 14px; flex: 0 0 64px; }
+    article h3 { margin: 0; }
+    article p { margin: .3rem 0 .8rem; }
+    .links { display: flex; flex-wrap: wrap; gap: 1rem; }
+    a { color: #075c9f; }
+    .notice { margin-top: 1.4rem; padding: 1rem; border-left: 4px solid #1769aa; background: #eaf1f8; }
+    code { overflow-wrap: anywhere; }
+    footer { padding: 1.5rem; text-align: center; color: #526173; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #101821; color: #e6edf5; }
+      article { background: #182431; border-color: #34485a; }
+      .button.secondary, .notice { background: #20374c; color: #e6edf5; }
+      a { color: #8bc8ff; }
+      footer { color: #a7b5c4; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Applify</h1>
+    <p>Android apps by Saurabh Kundu, distributed through an F-Droid-compatible repository.</p>
+  </header>
+  <main>
+    <h2>Get apps from Applify</h2>
+    <p>Add the repository to Droid-ify, F-Droid, or another compatible client to browse and receive updates.</p>
+    <div class="actions">
+      <a class="button" href="https://fdroid.link/#https://saurabhkundu1.github.io/Applify/repo?fingerprint=DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255">Add Applify repository</a>
+      <a class="button secondary" href="repo">Open repository page</a>
     </div>
 
-    <div id="apps" style="margin-top: 2em;">
-      <h3>Available Applications</h3>
-
-      <!-- Secure Pass -->
-      <div class="app-card" style="border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; border-radius: 8px;">
-        <h4>Secure Pass (v1.0.1)</h4>
-        <p><strong>Package ID:</strong> <code>com.applify.securepass</code></p>
-        <p>Offline, high-security encrypted password manager with biometrics and dynamic themes.</p>
-        <p>
-          <a href="repo/com.applify.securepass_2.apk">Direct APK Download (v1.0.1)</a> |
-          <a href="https://github.com/saurabhkundu1/secure-password-manager" target="_blank">Source Code</a>
-        </p>
-      </div>
-
-      <!-- Skycast -->
-      <div class="app-card" style="border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; border-radius: 8px;">
-        <h4>Skycast (v1.0.0)</h4>
-        <p><strong>Package ID:</strong> <code>com.applify.skycast</code></p>
-        <p>Modern weather app with graphs and thoughtful data visualization powered by Open-Meteo.</p>
-        <p>
-          <a href="repo/com.applify.skycast_1.apk">Direct APK Download (v1.0.0)</a> |
-          <a href="https://github.com/saurabhkundu1/skycast-weather" target="_blank">Source Code</a>
-        </p>
-      </div>
+    <h2>Available applications</h2>
+    <div class="apps">
+      <article>
+        <img src="repo/com.applify.securepass/en-US/icon.png" alt="Secure Pass app icon">
+        <div><h3>Secure Pass <small>v1.0.2</small></h3>
+          <p>Offline password manager with encrypted vault storage and biometric unlock.</p>
+          <div class="links"><a href="repo/com.applify.securepass_3.apk">Download APK</a><a href="https://github.com/saurabhkundu1/secure-password-manager">Source code</a></div>
+        </div>
+      </article>
+      <article>
+        <img src="repo/com.applify.skycast/en-US/icon.png" alt="Skycast app icon">
+        <div><h3>Skycast <small>v1.0.0</small></h3>
+          <p>Weather forecasts and visualizations powered by Open-Meteo.</p>
+          <div class="links"><a href="repo/com.applify.skycast_1.apk">Download APK</a><a href="https://github.com/saurabhkundu1/skycast-weather">Source code</a></div>
+        </div>
+      </article>
+      <article>
+        <img src="repo/com.applify.chronosphere/en-US/icon.png" alt="ChronoSphere app icon">
+        <div><h3>ChronoSphere <small>v1.0.0</small></h3>
+          <p>Save cities around the world and see their local time, including from a home-screen widget.</p>
+          <div class="links"><a href="repo/com.applify.chronosphere_1.apk">Download APK</a><a href="https://github.com/saurabhkundu1/chronosphere-time-app">Source code</a></div>
+        </div>
+      </article>
+      <article>
+        <img src="repo/com.applify.signalatlas/en-US/icon.png" alt="Signal Atlas app icon">
+        <div><h3>Signal Atlas <small>v1.0.0</small></h3>
+          <p>Opt-in cellular signal logging and approximate-area comparisons through a server you choose.</p>
+          <div class="links"><a href="repo/com.applify.signalatlas_1.apk">Download APK</a><a href="https://github.com/saurabhkundu1/signal-logger">Source code</a></div>
+        </div>
+      </article>
     </div>
-  </body>
+
+    <p class="notice"><strong>Signal Atlas server:</strong> no shared backend is hosted by default. To compare readings across devices, deploy your own server and configure its HTTPS URL in the app.</p>
+
+    <h2>Repository details</h2>
+    <p>Repository URL: <a href="https://saurabhkundu1.github.io/Applify/repo"><code>https://saurabhkundu1.github.io/Applify/repo</code></a></p>
+    <p>Signing certificate fingerprint (SHA-256):<br><code>DE 62 E0 D3 86 DB 9B 6F C6 16 AD F6 57 3F 45 8A AC 8D 04 F8 73 00 7C 73 B8 58 5F BE F0 96 02 55</code></p>
+    <p>If apps do not appear in Droid-ify, open the Applify repository settings and refresh it. Confirm the repository URL above and the fingerprint before removing and re-adding it.</p>
+  </main>
+  <footer>Applify · Open-source app distribution</footer>
+</body>
 </html>
