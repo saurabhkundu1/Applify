@@ -1,0 +1,10 @@
+{
+  "sourceRepository": "saurabhkundu1/chronosphere-time-app",
+  "sourceTag": "v1.0.0",
+  "sourceCommit": "045411109778ff72813375d76f531cee2794dcf5",
+  "releaseAsset": "ChronoSphere-1.0.0.apk",
+  "packageName": "com.applify.chronosphere",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "apkSha256": "eb7d550cbd02f639732f3368eb461dcfef29c45eed2aaf60e63fbf6b20ff99b5"
+}
