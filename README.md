@@ -16,8 +16,8 @@
 
 - **📱 Native F-Droid Protocol**: Full compatibility with F-Droid v1 & v2 JSON/XML index standards, `fdroidrepo://` deep linking, and QR code scanning.
 - **🔄 Automated Release CI/CD**: Automatically triggered via `repository_dispatch` when a new release is published in source app repositories, updating F-Droid indices and GitHub Pages without human intervention.
-- **🛡️ Rigorous Security & Verification**: Every incoming APK is verified for valid zip structure, V1/V2/V3 signatures (`apksigner`), and application badging (`aapt`) before index registration.
-- **🔒 Privacy First**: 100% open-source applications distributed directly without third-party tracking, ads, or proprietary SDKs.
+- **🛡️ Release Verification**: Incoming APKs are checked for ZIP integrity, a valid Android signature, and package/version metadata before indexing.
+- **🔒 Transparent Distribution**: Published APKs are listed with their package metadata and source repository links.
 
 ---
 
@@ -43,10 +43,10 @@
 
 ## 📲 How to Add to F-Droid / Droid-ify / Neo Store / Obtainium
 
-### Option 1: One-Tap Setup
+### Option 1: Add from the Web Portal
 1. Visit [https://saurabhkundu1.github.io/Applify/](https://saurabhkundu1.github.io/Applify/) on your Android phone.
-2. Tap **Add to F-Droid / Droid-ify**.
-3. Confirm adding the repository when prompted by your client app.
+2. Tap **Add this repository**.
+3. Choose or confirm your F-Droid-compatible client when prompted.
 
 ### Option 2: QR Code Scan
 1. Open Droid-ify, Neo Store, or F-Droid on your device.
@@ -86,11 +86,12 @@ When a source app repository (e.g. `saurabhkundu1/skycast-weather`) creates a ne
 The receiving GitHub Actions workflow (`deploy-fdroid-pages.yml`) executes the following steps:
 1. Validates payload fields and enforces repository/package whitelists.
 2. Downloads the published release asset from GitHub Releases.
-3. Verifies zip integrity (`zip -T`), signature (`apksigner`), and badging (`aapt`).
-4. Moves the verified APK into `repo/`.
-5. Executes `fdroid update` to regenerate signed F-Droid v1/v2 index JSON/XML files.
-6. Synchronizes root and `repo/` index files.
-7. Commits updated artifacts and deploys the site to GitHub Pages.
+3. Requires `zip`, `apksigner`, and `aapt`, then checks ZIP integrity, APK signature, package ID, and version fields.
+4. Records the release tag's source commit and the imported APK's SHA-256 in `repo/provenance/`.
+5. Moves the verified APK into `repo/`.
+6. Executes `fdroid update` to regenerate signed F-Droid v1/v2 index JSON/XML files.
+7. Verifies that the v2 entry hash, size, and package count match `index-v2.json`, then synchronizes root and `repo/` index files.
+8. Commits generated repository updates and deploys a staged Pages site without temporary caches or signing material.
 
 ---
 
@@ -105,17 +106,20 @@ Applify/
 │   ├── com.applify.securepass.yml  # Metadata definition for Secure Pass
 │   └── com.applify.skycast.yml     # Metadata definition for Skycast
 ├── repo/
-│   ├── config.yml                  # F-Droid server configuration
 │   ├── index-v1.json               # F-Droid v1 JSON index
 │   ├── index-v2.json               # F-Droid v2 JSON index
 │   ├── entry.json                  # F-Droid v2 entry header
 │   ├── index.xml                   # F-Droid XML fallback index
-│   ├── com.applify.securepass_2.apk# Published Secure Pass APK
-│   └── com.applify.skycast_1.apk   # Published Skycast APK
+│   ├── com.applify.securepass_2.apk # Published Secure Pass APK
+│   ├── com.applify.skycast_1.apk    # Published Skycast APK
+│   └── provenance/                  # Release source commits and APK checksums
 ├── index.html                      # Web catalogue & landing page
 ├── README.md                       # Project documentation
+├── LICENSE                         # MIT license
 └── .nojekyll                       # GitHub Pages Jekyll bypass
 ```
+
+The workflow creates its F-Droid `config.yml` and temporary keystore at the repository root during index generation. F-Droid cache files under `tmp/` are local build state and are excluded from the Pages artifact.
 
 ---
 

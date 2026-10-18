@@ -1,0 +1,12 @@
+# Local IDE state
+.idea/
+
+# F-Droid server cache and scratch output
+/tmp/
+/tmp_check/
+/pages_site/
+/generated.patch
+
+# Created only while regenerating signed indexes
+/config.yml
+/keystore.jks

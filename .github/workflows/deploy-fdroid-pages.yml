@@ -4,162 +4,145 @@ on:
   repository_dispatch:
     types: [new_release]
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
-  build_and_deploy:
-    name: Build F-Droid Index & Deploy Pages
+  build_and_publish:
+    name: Build and verify F-Droid repository
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
 
-      - name: Set up Python & JDK
-        uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
-          python-version: '3.x'
+          python-version: '3.12'
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
         with:
           distribution: temurin
           java-version: '21'
 
-      - name: Install fdroidserver & Android build tools
+      - name: Install repository and Android verification tools
         run: |
+          set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y fdroidserver aapt apksigner || pip install fdroidserver
+          sudo apt-get install -y aapt apksigner zip unzip rsync
+          FDROID_VENV="$RUNNER_TEMP/fdroidserver-venv"
+          python -m venv "$FDROID_VENV"
+          "$FDROID_VENV/bin/python" -m pip install --disable-pip-version-check \
+            'androguard==4.1.4' \
+            'fdroidserver @ git+https://gitlab.com/fdroid/fdroidserver.git@92229a9152a31d005503bac64d773551f0655494'
+          echo "FDROID_VENV=$FDROID_VENV" >> "$GITHUB_ENV"
+          "$FDROID_VENV/bin/python" - <<'PY'
+          from importlib.metadata import version
+          import sys
+          print(f"python=={sys.version.split()[0]}")
+          print(f"fdroidserver=={version('fdroidserver')}")
+          print(f"androguard=={version('androguard')}")
+          print("fdroidserver source revision: 92229a9152a31d005503bac64d773551f0655494")
+          PY
+          test -x "$FDROID_VENV/bin/fdroid"
+          command -v aapt
+          command -v apksigner
+          command -v zip
+          command -v unzip
 
-      - name: Handle Repository Dispatch & Verify APK
+      - name: Validate and import release APK
         if: github.event_name == 'repository_dispatch'
         shell: bash
+        env:
+          SOURCE_REPO: ${{ github.event.client_payload.source_repo }}
+          PACKAGE_NAME: ${{ github.event.client_payload.package_name }}
+          PACKAGE_NAME_FALLBACK: ${{ github.event.client_payload.app }}
+          VERSION_NAME: ${{ github.event.client_payload.version }}
+          VERSION_NAME_FALLBACK: ${{ github.event.client_payload.version_name }}
+          VERSION_CODE: ${{ github.event.client_payload.version_code }}
+          TAG_NAME: ${{ github.event.client_payload.tag }}
+          TAG_NAME_FALLBACK: ${{ github.event.client_payload.tag_name }}
+          ASSET_NAME: ${{ github.event.client_payload.asset_name }}
+          ASSET_NAME_FALLBACK: ${{ github.event.client_payload.apk_name }}
         run: |
-          echo "=== Processing repository_dispatch payload ==="
-          
-          SOURCE_REPO="${{ github.event.client_payload.source_repo }}"
-          PACKAGE_NAME="${{ github.event.client_payload.package_name }}"
-          VERSION_NAME="${{ github.event.client_payload.version }}"
-          VERSION_CODE="${{ github.event.client_payload.version_code }}"
-          TAG_NAME="${{ github.event.client_payload.tag }}"
-          ASSET_NAME="${{ github.event.client_payload.asset_name }}"
+          set -euo pipefail
 
-          # Fallbacks if alternate payload keys are used
-          if [ -z "$PACKAGE_NAME" ]; then PACKAGE_NAME="${{ github.event.client_payload.app }}"; fi
-          if [ -z "$VERSION_NAME" ]; then VERSION_NAME="${{ github.event.client_payload.version_name }}"; fi
-          if [ -z "$TAG_NAME" ]; then TAG_NAME="${{ github.event.client_payload.tag_name }}"; fi
-          if [ -z "$ASSET_NAME" ]; then ASSET_NAME="${{ github.event.client_payload.apk_name }}"; fi
+          PACKAGE_NAME="${PACKAGE_NAME:-${PACKAGE_NAME_FALLBACK:-}}"
+          VERSION_NAME="${VERSION_NAME:-${VERSION_NAME_FALLBACK:-}}"
+          TAG_NAME="${TAG_NAME:-${TAG_NAME_FALLBACK:-}}"
+          ASSET_NAME="${ASSET_NAME:-${ASSET_NAME_FALLBACK:-}}"
 
-          echo "Payload details:"
-          echo "  Source Repo:  $SOURCE_REPO"
-          echo "  Package Name: $PACKAGE_NAME"
-          echo "  Version Name: $VERSION_NAME"
-          echo "  Version Code: $VERSION_CODE"
-          echo "  Tag Name:     $TAG_NAME"
-          echo "  Asset Name:   $ASSET_NAME"
+          case "${SOURCE_REPO}:${PACKAGE_NAME}" in
+            saurabhkundu1/skycast-weather:com.applify.skycast|saurabhkundu1/secure-password-manager:com.applify.securepass) ;;
+            *) echo "Unsupported source repository/package pair" >&2; exit 1 ;;
+          esac
 
-          # 1. Validate required payload fields
-          if [ -z "$SOURCE_REPO" ] || [ -z "$PACKAGE_NAME" ] || [ -z "$VERSION_NAME" ] || [ -z "$VERSION_CODE" ] || [ -z "$TAG_NAME" ] || [ -z "$ASSET_NAME" ]; then
-            echo "Error: Missing required fields in repository_dispatch payload!"
-            exit 1
-          fi
+          [[ "$VERSION_CODE" =~ ^[1-9][0-9]{0,9}$ ]] || { echo "Invalid version code" >&2; exit 1; }
+          [[ "$VERSION_NAME" =~ ^[A-Za-z0-9][A-Za-z0-9._+-]{0,63}$ ]] || { echo "Invalid version name" >&2; exit 1; }
+          [[ "$TAG_NAME" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$ ]] || { echo "Invalid release tag" >&2; exit 1; }
+          [[ "$ASSET_NAME" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\.apk$ ]] || { echo "Invalid APK asset name" >&2; exit 1; }
 
-          # 2. Validate source repository whitelist
-          ALLOWED_REPOS="saurabhkundu1/skycast-weather saurabhkundu1/secure-password-manager"
-          if [[ ! " $ALLOWED_REPOS " =~ " $SOURCE_REPO " ]]; then
-            echo "Error: Unauthorized or unsupported source repository: $SOURCE_REPO"
-            exit 1
-          fi
-
-          # 3. Validate package ID whitelist
-          ALLOWED_PACKAGES="com.applify.skycast com.applify.securepass"
-          if [[ ! " $ALLOWED_PACKAGES " =~ " $PACKAGE_NAME " ]]; then
-            echo "Error: Invalid or unexpected package ID: $PACKAGE_NAME"
-            exit 1
-          fi
-
-          # 4. Construct download URL and fetch release APK
           DOWNLOAD_URL="https://github.com/${SOURCE_REPO}/releases/download/${TAG_NAME}/${ASSET_NAME}"
-          echo "Downloading APK from: $DOWNLOAD_URL"
-          
           mkdir -p tmp
           TMP_APK="tmp/downloaded_${PACKAGE_NAME}.apk"
-          
-          curl -L -f -o "$TMP_APK" "$DOWNLOAD_URL" || {
-            echo "Error: Failed to download asset from $DOWNLOAD_URL"
-            exit 1
-          }
+          curl --fail --location --silent --show-error --retry 3 --proto '=https' --tlsv1.2 \
+            --output "$TMP_APK" "$DOWNLOAD_URL"
+          test -s "$TMP_APK"
+          zip -T "$TMP_APK" >/dev/null
+          apksigner verify --verbose --print-certs "$TMP_APK"
 
-          if [ ! -s "$TMP_APK" ]; then
-            echo "Error: Downloaded APK file is empty!"
-            exit 1
-          fi
+          BADGING="$(aapt dump badging "$TMP_APK")"
+          ACTUAL_PKG="$(sed -n "s/^package: name='\([^']*\)'.*/\1/p" <<<"$BADGING")"
+          ACTUAL_VER_CODE="$(sed -n "s/^package:.*versionCode='\([^']*\)'.*/\1/p" <<<"$BADGING")"
+          ACTUAL_VER_NAME="$(sed -n "s/^package:.*versionName='\([^']*\)'.*/\1/p" <<<"$BADGING")"
+          [[ "$ACTUAL_PKG" == "$PACKAGE_NAME" ]] || { echo "APK package ID does not match payload" >&2; exit 1; }
+          [[ "$ACTUAL_VER_CODE" == "$VERSION_CODE" ]] || { echo "APK version code does not match payload" >&2; exit 1; }
+          [[ "$ACTUAL_VER_NAME" == "$VERSION_NAME" ]] || { echo "APK version name does not match payload" >&2; exit 1; }
 
-          # 5. Verify APK structure and signature
-          if ! zip -T "$TMP_APK" >/dev/null 2>&1; then
-            echo "Error: Downloaded file is not a valid zip/APK archive!"
-            exit 1
-          fi
-
-          if command -v apksigner >/dev/null 2>&1; then
-            apksigner verify "$TMP_APK" || {
-              echo "Error: APK signature verification failed!"
-              exit 1
-            }
-          fi
-
-          # 6. Verify actual Application ID, version name and version code
-          if command -v aapt >/dev/null 2>&1; then
-            BADGING=$(aapt dump badging "$TMP_APK")
-            ACTUAL_PKG=$(echo "$BADGING" | grep "package: name=" | cut -d"'" -f2)
-            ACTUAL_VER_CODE=$(echo "$BADGING" | grep "package: name=" | cut -d"'" -f4)
-            ACTUAL_VER_NAME=$(echo "$BADGING" | grep "package: name=" | cut -d"'" -f6)
-
-            echo "Extracted APK Badging:"
-            echo "  Package ID:   $ACTUAL_PKG"
-            echo "  Version Code: $ACTUAL_VER_CODE"
-            echo "  Version Name: $ACTUAL_VER_NAME"
-
-            if [ "$ACTUAL_PKG" != "$PACKAGE_NAME" ]; then
-              echo "Error: APK package ID ($ACTUAL_PKG) does not match expected payload ($PACKAGE_NAME)!"
-              exit 1
-            fi
-
-            if [ "$ACTUAL_VER_CODE" != "$VERSION_CODE" ]; then
-              echo "Error: APK version code ($ACTUAL_VER_CODE) does not match payload ($VERSION_CODE)!"
-              exit 1
-            fi
-
-            if [ "$ACTUAL_VER_NAME" != "$VERSION_NAME" ]; then
-              echo "Error: APK version name ($ACTUAL_VER_NAME) does not match payload ($VERSION_NAME)!"
-              exit 1
-            fi
-          fi
-
-          # 7. Copy verified APK to repo directory
           mkdir -p repo
-          TARGET_APK="repo/${PACKAGE_NAME}_${VERSION_CODE}.apk"
-          cp "$TMP_APK" "$TARGET_APK"
-          echo "Successfully verified and imported $TARGET_APK"
+          cp "$TMP_APK" "repo/${PACKAGE_NAME}_${VERSION_CODE}.apk"
 
-      - name: Ensure Metadata Exists
-        shell: bash
+          TAG_REF="refs/tags/${TAG_NAME}"
+          TAG_REFS="$(git ls-remote --quiet "https://github.com/${SOURCE_REPO}.git" "$TAG_REF" "${TAG_REF}^{}")"
+          SOURCE_COMMIT="$(awk -v ref="$TAG_REF" '$2 == ref "^{}" { print $1; found=1; exit } $2 == ref { commit=$1 } END { if (!found && commit != "") print commit }' <<<"$TAG_REFS")"
+          [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40,64}$ ]] || { echo "Could not resolve release tag to a source commit" >&2; exit 1; }
+          APK_SHA256="$(sha256sum "$TMP_APK" | cut -d' ' -f1)"
+          mkdir -p repo/provenance
+          export APK_SHA256 SOURCE_COMMIT SOURCE_REPO TAG_NAME ASSET_NAME PACKAGE_NAME VERSION_NAME VERSION_CODE
+          python - <<'PY'
+          import json, os
+          record = {
+              "sourceRepository": os.environ["SOURCE_REPO"],
+              "sourceTag": os.environ["TAG_NAME"],
+              "sourceCommit": os.environ["SOURCE_COMMIT"],
+              "releaseAsset": os.environ["ASSET_NAME"],
+              "packageName": os.environ["PACKAGE_NAME"],
+              "versionName": os.environ["VERSION_NAME"],
+              "versionCode": int(os.environ["VERSION_CODE"]),
+              "apkSha256": os.environ["APK_SHA256"],
+          }
+          path = f"repo/provenance/{record['packageName']}_{record['versionCode']}.json"
+          with open(path, "w", encoding="utf-8") as f:
+              json.dump(record, f, indent=2)
+              f.write("\n")
+          PY
+
+      - name: Ensure Skycast metadata exists
         run: |
-          mkdir -p metadata
-          if [ ! -f "metadata/com.applify.skycast.yml" ]; then
-            cat << 'EOF' > metadata/com.applify.skycast.yml
+          if [ ! -f metadata/com.applify.skycast.yml ]; then
+            cat > metadata/com.applify.skycast.yml <<'EOF'
           Categories:
             - Weather
           License: GPL-3.0
@@ -176,7 +159,32 @@ jobs:
           EOF
           fi
 
-      - name: Update & Verify F-Droid Repository Index
+      - name: Verify both APK resource tables with pinned F-Droid parser
+        run: |
+          set -euo pipefail
+          "$FDROID_VENV/bin/python" - <<'PY'
+          from fdroidserver import common
+          from importlib.metadata import version
+          from pathlib import Path
+
+          print(f"Parser toolchain: fdroidserver=={version('fdroidserver')}, androguard=={version('androguard')}")
+          for path, expected_package in (
+              (Path("repo/com.applify.securepass_2.apk"), "com.applify.securepass"),
+              (Path("repo/com.applify.skycast_1.apk"), "com.applify.skycast"),
+          ):
+              apk = common.get_androguard_APK(str(path))
+              if not apk.is_valid_APK():
+                  raise SystemExit(f"Invalid APK: {path}")
+              resources = apk.get_android_resources()
+              if resources is None:
+                  raise SystemExit(f"No parsed Android resources: {path}")
+              package = apk.get_package()
+              if package != expected_package:
+                  raise SystemExit(f"Unexpected package in {path}: {package}")
+              print(f"Parsed {path}: {package}, Android resources OK")
+          PY
+
+      - name: Generate and verify signed F-Droid indexes
         shell: bash
         env:
           REPO_KEYSTORE_BASE64: ${{ secrets.REPO_KEYSTORE_BASE64 }}
@@ -184,142 +192,199 @@ jobs:
           KEY_PASS: ${{ secrets.KEY_PASS }}
         run: |
           set -euo pipefail
+          umask 077
+          : "${REPO_KEYSTORE_BASE64:?REPO_KEYSTORE_BASE64 secret is required}"
+          : "${KEYSTORE_PASS:?KEYSTORE_PASS secret is required}"
+          : "${KEY_PASS:?KEY_PASS secret is required}"
 
-          echo "=== 1. Validating Repository Signing Secrets ==="
-          if [ -z "$REPO_KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASS" ] || [ -z "$KEY_PASS" ]; then
-            echo "Error: REPO_KEYSTORE_BASE64, KEYSTORE_PASS, and KEY_PASS secrets are required for secure publishing!"
-            exit 1
-          fi
-
-          echo "Decoding keystore..."
-          echo "$REPO_KEYSTORE_BASE64" | base64 -d > keystore.jks
-          if [ ! -s keystore.jks ]; then
-            echo "Error: Base64 keystore decoding failed or produced empty file!"
-            exit 1
-          fi
+          cleanup() { rm -f keystore.jks config.yml; }
+          trap cleanup EXIT
+          printf '%s' "$REPO_KEYSTORE_BASE64" | base64 --decode > keystore.jks
+          test -s keystore.jks
 
           EXPECTED_FINGERPRINT="DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255"
-          ACTUAL_FP=$(keytool -list -v -keystore keystore.jks -storepass "$KEYSTORE_PASS" -alias "securepass" 2>/dev/null | sed -n 's/^[[:space:]]*SHA256:[[:space:]]*//p' | head -n 1 | tr -d ':' | tr 'a-z' 'A-Z')
-          if [ -z "$ACTUAL_FP" ]; then
-            echo "Error: Could not extract SHA-256 fingerprint for alias 'securepass' from keystore!"
-            rm -f keystore.jks
-            exit 1
-          fi
-          if [ "$ACTUAL_FP" != "$EXPECTED_FINGERPRINT" ]; then
-            echo "Error: Keystore SHA-256 fingerprint ($ACTUAL_FP) does not match expected repository key ($EXPECTED_FINGERPRINT)!"
-            rm -f keystore.jks
-            exit 1
-          fi
+          ACTUAL_FINGERPRINT="$(keytool -list -v -keystore keystore.jks -storepass "$KEYSTORE_PASS" -alias securepass 2>/dev/null \
+            | sed -n 's/^[[:space:]]*SHA256:[[:space:]]*//p' | head -n 1 | tr -d ':' | tr '[:lower:]' '[:upper:]')"
+          test -n "$ACTUAL_FINGERPRINT"
+          [[ "$ACTUAL_FINGERPRINT" == "$EXPECTED_FINGERPRINT" ]] || { echo "Repository keystore fingerprint mismatch" >&2; exit 1; }
 
-          echo "=== 2. Generating Index via F-Droid Server Toolchain ==="
-          cat << EOF > config.yml
-          repo_name: "Applify"
-          repo_icon: "icon.png"
-          repo_description: "Applify Official F-Droid Repository"
-          repo_url: "https://saurabhkundu1.github.io/Applify/repo"
-          keystore: "keystore.jks"
-          repo_keyalias: "securepass"
-          keystorepass: "$KEYSTORE_PASS"
-          keypass: "$KEY_PASS"
-          EOF
+          install -m 600 /dev/null config.yml
+          python - <<'PY'
+          import json, os
+          config = {
+              "repo_name": "Applify",
+              "repo_icon": "icon.png",
+              "repo_description": "Applify Official F-Droid Repository",
+              "repo_url": "https://saurabhkundu1.github.io/Applify/repo",
+              "keystore": "keystore.jks",
+              "repo_keyalias": "securepass",
+              "keystorepass": os.environ["KEYSTORE_PASS"],
+              "keypass": os.environ["KEY_PASS"],
+          }
+          os.chmod("config.yml", 0o600)
+          with open("config.yml", "w", encoding="utf-8") as config_file:
+              json.dump(config, config_file)
+          PY
 
-          fdroid update --create-metadata
-          rm -f keystore.jks config.yml
+          "$FDROID_VENV/bin/fdroid" update --create-metadata
+          test -s repo/index-v1.json
+          test -s repo/index-v1.jar
+          test -s repo/index-v2.json
+          test -s repo/entry.json
+          test -s repo/entry.jar
+          test -s repo/index.xml
+          test -s repo/index.jar
 
-          echo "=== 3. Synchronizing Root & Repo Artifacts ==="
-          if [ ! -f "repo/index-v1.json" ] || [ ! -f "repo/index-v1.jar" ]; then
-            echo "Error: F-Droid update failed to generate required index artifacts!"
-            exit 1
-          fi
-
-          cp -f repo/index-v1.json index-v1.json
-          if [ -f "repo/index-v2.json" ]; then cp -f repo/index-v2.json index-v2.json; fi
-          if [ -f "repo/entry.json" ]; then cp -f repo/entry.json entry.json; fi
-          if [ -f "repo/index.xml" ]; then cp -f repo/index.xml index.xml; fi
-          cp -f repo/index-v1.jar index-v1.jar
-          if [ -f "repo/index.jar" ]; then cp -f repo/index.jar index.jar; fi
-          if [ -f "repo/entry.jar" ]; then cp -f repo/entry.jar entry.jar; fi
-
-          echo "=== 4. Rigorous Signature, Fingerprint & Consistency Audit ==="
           verify_jar() {
-            local jar_path="$1"
-            local json_inside="$2"
-            local json_disk="$3"
+            local jar_path="$1" embedded_file="$2" disk_file="$3" extract_dir
+            test -f "$jar_path"
+            jar tf "$jar_path" | grep -qE '^META-INF/.*\.SF$'
+            local legacy_algorithms=false
+            case "$jar_path" in
+              repo/index-v1.jar|repo/index.jar) legacy_algorithms=true ;;
+            esac
+            "$FDROID_VENV/bin/python" - "$jar_path" "$legacy_algorithms" <<'PY'
+          import sys
+          from fdroidserver import common
 
-            echo "Auditing $jar_path..."
-            if [ ! -f "$jar_path" ]; then
-              echo "Error: Required artifact $jar_path is missing!"
-              exit 1
-            fi
+          jar_path, legacy_algorithms = sys.argv[1:]
+          common.read_config()
+          if legacy_algorithms == "true":
+              common.verify_deprecated_jar_signature(jar_path)
+          else:
+              common.verify_jar_signature(jar_path)
+          print(f"Verified signed index JAR: {jar_path}")
+          PY
 
-            if ! jar tf "$jar_path" | grep -qE "^META-INF/.*\.SF$"; then
-              echo "Error: $jar_path is missing signature files (unsigned JAR)!"
-              exit 1
-            fi
+            local cert_fingerprint
+            cert_fingerprint="$(keytool -printcert -jarfile "$jar_path" 2>/dev/null \
+              | sed -n 's/^[[:space:]]*SHA256:[[:space:]]*//p' | head -n 1 | tr -d ':' | tr '[:lower:]' '[:upper:]')"
+            [[ "$cert_fingerprint" == "$EXPECTED_FINGERPRINT" ]] || { echo "Unexpected signer for $jar_path" >&2; exit 1; }
 
-            VERIFY_OUT=$(jarsigner -verify "$jar_path" 2>&1)
-            if ! echo "$VERIFY_OUT" | grep -q "jar verified."; then
-              echo "Error: Jarsigner verification failed for $jar_path!"
-              echo "$VERIFY_OUT"
-              exit 1
-            fi
-
-            CERT_FP=$(keytool -printcert -jarfile "$jar_path" 2>/dev/null | sed -n 's/^[[:space:]]*SHA256:[[:space:]]*//p' | head -n 1 | tr -d ':' | tr 'a-z' 'A-Z')
-            if [ -z "$CERT_FP" ]; then
-              echo "Error: Could not extract SHA-256 certificate fingerprint from $jar_path!"
-              exit 1
-            fi
-            if [ "$CERT_FP" != "$EXPECTED_FINGERPRINT" ]; then
-              echo "Error: Certificate fingerprint ($CERT_FP) for $jar_path does not match repository key ($EXPECTED_FINGERPRINT)!"
-              exit 1
-            fi
-
-            mkdir -p tmp_check
-            unzip -q -o "$jar_path" "$json_inside" -d tmp_check
-            HASH_JAR=$(sha256sum "tmp_check/$json_inside" | awk '{print $1}')
-            HASH_DISK=$(sha256sum "$json_disk" | awk '{print $1}')
-            rm -rf tmp_check
-
-            if [ "$HASH_JAR" != "$HASH_DISK" ]; then
-              echo "Error: Embedded $json_inside hash ($HASH_JAR) in $jar_path does not match disk hash ($HASH_DISK)!"
-              exit 1
-            fi
-
-            echo "Verified $jar_path passed signature, fingerprint, and JSON consistency checks."
+            extract_dir="$(mktemp -d)"
+            unzip -q "$jar_path" "$embedded_file" -d "$extract_dir"
+            cmp --silent "$extract_dir/$embedded_file" "$disk_file"
+            rm -rf "$extract_dir"
           }
 
-          verify_jar "repo/index-v1.jar" "index-v1.json" "repo/index-v1.json"
-          if [ -f "repo/index.jar" ]; then verify_jar "repo/index.jar" "index.xml" "repo/index.xml"; fi
-          if [ -f "repo/entry.jar" ]; then verify_jar "repo/entry.jar" "entry.json" "repo/entry.json"; fi
+          verify_jar repo/index-v1.jar index-v1.json repo/index-v1.json
+          verify_jar repo/index.jar index.xml repo/index.xml
+          verify_jar repo/entry.jar entry.json repo/entry.json
 
-      - name: Commit Updated Repo Artifacts to Git
-        if: github.event_name == 'repository_dispatch'
-        shell: bash
+          python - <<'PY'
+          import hashlib, json, os
+          with open("repo/entry.json", encoding="utf-8") as f:
+              entry = json.load(f)
+          index_path = "repo/index-v2.json"
+          with open(index_path, "rb") as f:
+              index_bytes = f.read()
+          expected = entry["index"]
+          actual_hash = hashlib.sha256(index_bytes).hexdigest()
+          if expected["name"].lstrip("/") != "index-v2.json":
+              raise SystemExit("entry.json points to an unexpected index path")
+          if expected["sha256"] != actual_hash or expected["size"] != len(index_bytes):
+              raise SystemExit("entry.json hash or size does not match index-v2.json")
+          with open(index_path, encoding="utf-8") as f:
+              index = json.load(f)
+          if expected["numPackages"] != len(index["packages"]):
+              raise SystemExit("entry.json package count does not match index-v2.json")
+          PY
+
+          cp -f repo/index-v1.json index-v1.json
+          cp -f repo/index-v2.json index-v2.json
+          cp -f repo/entry.json entry.json
+          cp -f repo/index.xml index.xml
+          cp -f repo/index-v1.jar index-v1.jar
+          cp -f repo/index.jar index.jar
+          cp -f repo/entry.jar entry.jar
+
+      - name: Prepare repository update patch
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          if [ -d "metadata" ]; then git add metadata/; fi
-          if [ -d "repo" ]; then git add repo/; fi
-          if [ -d "status" ]; then git add status/; fi
-          if [ -d "icons" ]; then git add icons/; fi
-          ls index* >/dev/null 2>&1 && git add index*
-          ls entry* >/dev/null 2>&1 && git add entry*
+          set -euo pipefail
+          git add -N -- metadata repo status icons index* entry*
+          git diff --binary --full-index HEAD -- metadata/ repo/ status/ icons/ index* entry* > generated.patch
 
-          if ! git diff --staged --quiet; then
-            git commit -m "auto: import and publish release for ${{ github.event.client_payload.package_name || 'app' }}"
-            git push origin main
-          else
-            echo "No changes to commit"
+      - name: Stage public Pages files
+        run: |
+          set -euo pipefail
+          mkdir pages_site
+          rsync -a \
+            --exclude='/.git/' \
+            --exclude='/.github/' \
+            --exclude='/.gitignore' \
+            --exclude='/.idea/' \
+            --exclude='/metadata/' \
+            --exclude='/tmp/' \
+            --exclude='/tmp_check/' \
+            --exclude='/status/' \
+            --exclude='/repo/status/' \
+            --exclude='/pages_site/' \
+            --exclude='/config.yml' \
+            --exclude='/keystore.jks' \
+            ./ pages_site/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: pages_site/
+          include-hidden-files: true
+
+      - name: Upload generated repository changes
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: generated-repository-patch
+          path: generated.patch
+          if-no-files-found: error
+
+  commit_import:
+    name: Commit generated repository update
+    needs: build_and_publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+
+      - name: Download generated repository changes
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: generated-repository-patch
+
+      - name: Apply and commit generated changes
+        run: |
+          set -euo pipefail
+          if [ ! -s generated.patch ]; then
+            echo "No repository changes to commit"
+            exit 0
+          fi
+          git apply --binary --check generated.patch
+          git apply --binary generated.patch
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add metadata/ repo/ status/ icons/ index* entry*
+          if ! git diff --cached --quiet; then
+            git commit -m "auto: import and publish release"
+            git push origin HEAD:main
           fi
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+  deploy:
+    name: Deploy GitHub Pages
+    needs: [build_and_publish, commit_import]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
 
-      - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
-      - name: Deploy to GitHub Pages
+      - name: Deploy Pages artifact
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
