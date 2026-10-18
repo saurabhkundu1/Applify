@@ -25,8 +25,10 @@
 
 | Application | Package ID | Version | Description | Links |
 | :--- | :--- | :--- | :--- | :--- |
-| **Secure Pass** | `com.applify.securepass` | `1.0.1` | Offline, high-security password manager with AES-256-GCM encryption and biometrics. | [Source](https://github.com/saurabhkundu1/secure-password-manager) \| [APK Download](https://saurabhkundu1.github.io/Applify/repo/com.applify.securepass_2.apk) |
+| **Secure Pass** | `com.applify.securepass` | `1.0.2` | Offline, high-security password manager with AES-256-GCM encryption and biometrics. | [Source](https://github.com/saurabhkundu1/secure-password-manager) \| [APK Download](https://saurabhkundu1.github.io/Applify/repo/com.applify.securepass_3.apk) |
 | **Skycast** | `com.applify.skycast` | `1.0.0` | Modern weather application with interactive graphs and Open-Meteo visualization. | [Source](https://github.com/saurabhkundu1/skycast-weather) \| [APK Download](https://saurabhkundu1.github.io/Applify/repo/com.applify.skycast_1.apk) |
+| **ChronoSphere** | `com.applify.chronosphere` | `1.0.0` | Save world cities and track their local times from the app or home-screen widget. | [Source](https://github.com/saurabhkundu1/chronosphere-time-app) \| [APK Download](https://saurabhkundu1.github.io/Applify/repo/com.applify.chronosphere_1.apk) |
+| **Signal Atlas** | `com.applify.signalatlas` | `1.0.0` | Opt-in cellular signal logging with anonymous, approximate-area comparisons through a configurable server. | [Source](https://github.com/saurabhkundu1/signal-logger) \| [APK Download](https://saurabhkundu1.github.io/Applify/repo/com.applify.signalatlas_1.apk) |
 
 ---
 
@@ -104,7 +106,9 @@ Applify/
 │       └── deploy-fdroid-pages.yml # Main deployment and release-dispatch handler
 ├── metadata/
 │   ├── com.applify.securepass.yml  # Metadata definition for Secure Pass
-│   └── com.applify.skycast.yml     # Metadata definition for Skycast
+│   ├── com.applify.skycast.yml     # Metadata definition for Skycast
+│   ├── com.applify.chronosphere.yml # Metadata definition for ChronoSphere
+│   └── com.applify.signalatlas.yml  # Metadata definition for Signal Atlas
 ├── repo/
 │   ├── index-v1.json               # F-Droid v1 JSON index
 │   ├── index-v2.json               # F-Droid v2 JSON index

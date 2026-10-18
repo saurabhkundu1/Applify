@@ -1,0 +1,14 @@
+Categories:
+  - Internet
+  - System
+License: Apache-2.0
+WebSite: "https://github.com/saurabhkundu1/signal-logger"
+SourceCode: "https://github.com/saurabhkundu1/signal-logger"
+IssueTracker: "https://github.com/saurabhkundu1/signal-logger/issues"
+Name: "Signal Atlas"
+Summary: "Measure and compare mobile signal by area and operator"
+Description: |-
+  Collect cellular signal readings with your consent and share approximate area summaries with users of a server you choose. Exact location is not uploaded.
+AutoName: "Signal Atlas"
+CurrentVersion: "1.0.0"
+CurrentVersionCode: 1

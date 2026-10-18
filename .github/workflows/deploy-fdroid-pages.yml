@@ -85,7 +85,7 @@ jobs:
           ASSET_NAME="${ASSET_NAME:-${ASSET_NAME_FALLBACK:-}}"
 
           case "${SOURCE_REPO}:${PACKAGE_NAME}" in
-            saurabhkundu1/skycast-weather:com.applify.skycast|saurabhkundu1/secure-password-manager:com.applify.securepass) ;;
+            saurabhkundu1/skycast-weather:com.applify.skycast|saurabhkundu1/secure-password-manager:com.applify.securepass|saurabhkundu1/chronosphere-time-app:com.applify.chronosphere|saurabhkundu1/signal-logger:com.applify.signalatlas) ;;
             *) echo "Unsupported source repository/package pair" >&2; exit 1 ;;
           esac
 
@@ -101,7 +101,19 @@ jobs:
             --output "$TMP_APK" "$DOWNLOAD_URL"
           test -s "$TMP_APK"
           zip -T "$TMP_APK" >/dev/null
-          apksigner verify --verbose --print-certs "$TMP_APK"
+          SIGNATURE_REPORT="$RUNNER_TEMP/apksigner-report.txt"
+          apksigner verify --verbose --print-certs "$TMP_APK" > "$SIGNATURE_REPORT"
+          SIGNER_COUNT="$(grep -Ec '^Signer #[0-9]+ certificate SHA-256 digest:' "$SIGNATURE_REPORT" || true)"
+          [[ "$SIGNER_COUNT" == "1" ]] || { echo "APK must have exactly one signing certificate" >&2; exit 1; }
+          ACTUAL_APP_FINGERPRINT="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$SIGNATURE_REPORT" | tr -d ':' | tr '[:lower:]' '[:upper:]')"
+          case "$PACKAGE_NAME" in
+            com.applify.securepass|com.applify.skycast) EXPECTED_APP_FINGERPRINT="DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ;;
+            com.applify.chronosphere) EXPECTED_APP_FINGERPRINT="DD3A1F33BF5EEEA8207CDDD09E7682138AF88790BC78E0CD079C7C7C9F976DEE" ;;
+            com.applify.signalatlas) EXPECTED_APP_FINGERPRINT="0E56825E6EC1680BA0D6037B5B2E0D9E27C22CC444CF9BC89E0E6FECB686D14E" ;;
+            *) echo "No signing identity is pinned for $PACKAGE_NAME" >&2; exit 1 ;;
+          esac
+          [[ "$ACTUAL_APP_FINGERPRINT" == "$EXPECTED_APP_FINGERPRINT" ]] || { echo "APK signing certificate fingerprint mismatch for $PACKAGE_NAME" >&2; exit 1; }
+          echo "APK signing certificate fingerprint verified for $PACKAGE_NAME"
 
           BADGING="$(aapt dump badging "$TMP_APK")"
           ACTUAL_PKG="$(sed -n "s/^package: name='\([^']*\)'.*/\1/p" <<<"$BADGING")"
@@ -113,6 +125,20 @@ jobs:
 
           mkdir -p repo
           cp "$TMP_APK" "repo/${PACKAGE_NAME}_${VERSION_CODE}.apk"
+
+          METADATA_FILE="metadata/${PACKAGE_NAME}.yml"
+          test -f "$METADATA_FILE" || { echo "Missing F-Droid metadata for $PACKAGE_NAME" >&2; exit 1; }
+          python - "$METADATA_FILE" "$VERSION_NAME" "$VERSION_CODE" <<'PY'
+          import re, sys
+          from pathlib import Path
+          path = Path(sys.argv[1])
+          text = path.read_text(encoding="utf-8")
+          text, version_count = re.subn(r"(?m)^CurrentVersion:.*$", f'CurrentVersion: "{sys.argv[2]}"', text)
+          text, code_count = re.subn(r"(?m)^CurrentVersionCode:.*$", f"CurrentVersionCode: {sys.argv[3]}", text)
+          if version_count != 1 or code_count != 1:
+              raise SystemExit(f"Expected one version and code field in {path}")
+          path.write_text(text, encoding="utf-8")
+          PY
 
           TAG_REF="refs/tags/${TAG_NAME}"
           TAG_REFS="$(git ls-remote --quiet "https://github.com/${SOURCE_REPO}.git" "$TAG_REF" "${TAG_REF}^{}")"
@@ -159,7 +185,7 @@ jobs:
           EOF
           fi
 
-      - name: Verify both APK resource tables with pinned F-Droid parser
+      - name: Verify every APK resource table with pinned F-Droid parser
         run: |
           set -euo pipefail
           "$FDROID_VENV/bin/python" - <<'PY'
@@ -168,10 +194,16 @@ jobs:
           from pathlib import Path
 
           print(f"Parser toolchain: fdroidserver=={version('fdroidserver')}, androguard=={version('androguard')}")
-          for path, expected_package in (
-              (Path("repo/com.applify.securepass_2.apk"), "com.applify.securepass"),
-              (Path("repo/com.applify.skycast_1.apk"), "com.applify.skycast"),
-          ):
+          packages = {
+              "com.applify.securepass",
+              "com.applify.skycast",
+              "com.applify.chronosphere",
+              "com.applify.signalatlas",
+          }
+          apk_paths = sorted(Path("repo").glob("*.apk"))
+          if not apk_paths:
+              raise SystemExit("No APKs found in repository")
+          for path in apk_paths:
               apk = common.get_androguard_APK(str(path))
               if not apk.is_valid_APK():
                   raise SystemExit(f"Invalid APK: {path}")
@@ -179,8 +211,10 @@ jobs:
               if resources is None:
                   raise SystemExit(f"No parsed Android resources: {path}")
               package = apk.get_package()
-              if package != expected_package:
-                  raise SystemExit(f"Unexpected package in {path}: {package}")
+              if package not in packages:
+                  raise SystemExit(f"Unapproved package in {path}: {package}")
+              if not path.name.startswith(f"{package}_"):
+                  raise SystemExit(f"APK filename does not match its package: {path}")
               print(f"Parsed {path}: {package}, Android resources OK")
           PY
 
