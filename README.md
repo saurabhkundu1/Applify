@@ -25,10 +25,13 @@
 
 | Application | Package ID | Version | Description | Links |
 | :--- | :--- | :--- | :--- | :--- |
-| **Secure Pass** | `com.applify.securepass` | `1.0.2` | Offline, high-security password manager with AES-256-GCM encryption and biometrics. | [Source](https://github.com/saurabhkundu1/secure-password-manager) \| [APK Download](https://saurabhkundu1.github.io/Applify/repo/com.applify.securepass_3.apk) |
-| **Skycast** | `com.applify.skycast` | `1.0.0` | Modern weather application with interactive graphs and Open-Meteo visualization. | [Source](https://github.com/saurabhkundu1/skycast-weather) \| [APK Download](https://saurabhkundu1.github.io/Applify/repo/com.applify.skycast_1.apk) |
-| **ChronoSphere** | `com.applify.chronosphere` | `1.0.0` | Save world cities and track their local times from the app or home-screen widget. | [Source](https://github.com/saurabhkundu1/chronosphere-time-app) \| [APK Download](https://saurabhkundu1.github.io/Applify/repo/com.applify.chronosphere_1.apk) |
-| **Signal Atlas** | `com.applify.signalatlas` | `1.0.0` | Opt-in cellular signal logging with anonymous, approximate-area comparisons through a configurable server. | [Source](https://github.com/saurabhkundu1/signal-logger) \| [APK Download](https://saurabhkundu1.github.io/Applify/repo/com.applify.signalatlas_1.apk) |
+| **Secure Pass** | `com.applify.securepass` | `1.0.3` | Offline password manager. Export an encrypted vault backup, uninstall the old signing identity, then reinstall this same package ID. | [Source](https://github.com/saurabhkundu1/secure-password-manager) |
+| **Skycast** | `com.applify.skycast` | `1.0.1` | Modern weather application with interactive graphs and Open-Meteo visualization. Reinstall after removing the old signing identity. | [Source](https://github.com/saurabhkundu1/skycast-weather) |
+| **ChronoSphere** | `com.applify.chronosphere` | `1.0.0` | Save world cities and track their local times from the app or home-screen widget. | [Source](https://github.com/saurabhkundu1/chronosphere-time-app) |
+| **Signal Atlas** | `com.applify.signalatlas` | `1.0.0` | Opt-in cellular signal logging with on-device history, approximate-area maps, and CSV export. | [Source](https://github.com/saurabhkundu1/signal-logger) |
+| **Siprise** | `com.applify.watertracker` | `1.0.0` | Track water intake and receive gentle reminders. Prepared; APK import is waiting for the signing-key migration. | [Source](https://github.com/saurabhkundu1/siprise-android) |
+
+**Signing-key migration:** New Secure Pass and Skycast releases keep their existing package IDs but use replacement app-signing certificates. Export Secure Pass data and uninstall each old app before installing its replacement. The Applify repository URL stays the same; Droidify may ask you to re-add the repository after its index-signing key changes.
 
 ---
 
@@ -39,7 +42,7 @@
 | **Web Portal** | [https://saurabhkundu1.github.io/Applify/](https://saurabhkundu1.github.io/Applify/) |
 | **F-Droid Repo URL** | `https://saurabhkundu1.github.io/Applify/repo` |
 | **F-Droid Deep Link** | [`fdroidrepo://saurabhkundu1.github.io/Applify/repo`](fdroidrepo://saurabhkundu1.github.io/Applify/repo) |
-| **SHA-256 Fingerprint** | `DE 62 E0 D3 86 DB 9B 6F C6 16 AD F6 57 3F 45 8A AC 8D 04 F8 73 00 7C 73 B8 58 5F BE F0 96 02 55` |
+| **SHA-256 Fingerprint** | New repository key fingerprint will be posted after the signing-key migration. |
 
 ---
 
@@ -95,6 +98,8 @@ The receiving GitHub Actions workflow (`deploy-fdroid-pages.yml`) executes the f
 7. Verifies that the v2 entry hash, size, and package count match `index-v2.json`, then synchronizes root and `repo/` index files.
 8. Commits generated repository updates and deploys a staged Pages site without temporary caches or signing material.
 
+Siprise release imports additionally require the `EXPECTED_WATERTRACKER_SIGNER_SHA256` repository variable. Its signer must be distinct from the F-Droid repository signer.
+
 ---
 
 ## 📂 Repository Layout
@@ -108,14 +113,14 @@ Applify/
 │   ├── com.applify.securepass.yml  # Metadata definition for Secure Pass
 │   ├── com.applify.skycast.yml     # Metadata definition for Skycast
 │   ├── com.applify.chronosphere.yml # Metadata definition for ChronoSphere
-│   └── com.applify.signalatlas.yml  # Metadata definition for Signal Atlas
+│   ├── com.applify.signalatlas.yml  # Metadata definition for Signal Atlas
+│   └── com.applify.watertracker.yml # Metadata definition for Siprise
 ├── repo/
 │   ├── index-v1.json               # F-Droid v1 JSON index
 │   ├── index-v2.json               # F-Droid v2 JSON index
 │   ├── entry.json                  # F-Droid v2 entry header
 │   ├── index.xml                   # F-Droid XML fallback index
-│   ├── com.applify.securepass_2.apk # Published Secure Pass APK
-│   ├── com.applify.skycast_1.apk    # Published Skycast APK
+│   ├── *.apk                       # Published APKs signed with each app's current trusted key
 │   └── provenance/                  # Release source commits and APK checksums
 ├── index.html                      # Web catalogue & landing page
 ├── README.md                       # Project documentation

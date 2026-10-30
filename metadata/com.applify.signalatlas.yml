@@ -6,9 +6,9 @@ WebSite: "https://github.com/saurabhkundu1/signal-logger"
 SourceCode: "https://github.com/saurabhkundu1/signal-logger"
 IssueTracker: "https://github.com/saurabhkundu1/signal-logger/issues"
 Name: "Signal Atlas"
-Summary: "Measure and compare mobile signal by area and operator"
+Summary: "Record local cellular signal history and view approximate-area maps"
 Description: |-
-  Collect cellular signal readings with your consent and share approximate area summaries with users of a server you choose. Exact location is not uploaded.
+  Record cellular signal strength and an approximate area on this device. Export readings as CSV; exact location is excluded. The map sends the approximate area and your IP address to OpenStreetMap to load map tiles.
 AutoName: "Signal Atlas"
 CurrentVersion: "1.0.0"
 CurrentVersionCode: 1

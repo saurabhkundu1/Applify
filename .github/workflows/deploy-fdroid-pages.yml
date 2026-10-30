@@ -76,6 +76,9 @@ jobs:
           TAG_NAME_FALLBACK: ${{ github.event.client_payload.tag_name }}
           ASSET_NAME: ${{ github.event.client_payload.asset_name }}
           ASSET_NAME_FALLBACK: ${{ github.event.client_payload.apk_name }}
+          EXPECTED_SIGNER_SHA256: ${{ vars.EXPECTED_SIGNER_SHA256 }}
+          EXPECTED_SKYCAST_SIGNER_SHA256: ${{ vars.EXPECTED_SKYCAST_SIGNER_SHA256 }}
+          EXPECTED_WATERTRACKER_SIGNER_SHA256: ${{ vars.EXPECTED_WATERTRACKER_SIGNER_SHA256 }}
         run: |
           set -euo pipefail
 
@@ -84,9 +87,23 @@ jobs:
           TAG_NAME="${TAG_NAME:-${TAG_NAME_FALLBACK:-}}"
           ASSET_NAME="${ASSET_NAME:-${ASSET_NAME_FALLBACK:-}}"
 
-          case "${SOURCE_REPO}:${PACKAGE_NAME}" in
-            saurabhkundu1/skycast-weather:com.applify.skycast|saurabhkundu1/secure-password-manager:com.applify.securepass|saurabhkundu1/chronosphere-time-app:com.applify.chronosphere|saurabhkundu1/signal-logger:com.applify.signalatlas) ;;
-            *) echo "Unsupported source repository/package pair" >&2; exit 1 ;;
+          case "$SOURCE_REPO" in
+            saurabhkundu1/secure-password-manager)
+              [[ "$PACKAGE_NAME" == "com.applify.securepass" ]] || { echo "Unexpected Secure Pass package ID" >&2; exit 1; }
+              [[ "$EXPECTED_SIGNER_SHA256" =~ ^[A-Fa-f0-9]{64}$ ]] || { echo "Secure Pass signer fingerprint is not configured" >&2; exit 1; }
+              [[ "${EXPECTED_SIGNER_SHA256^^}" != "DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ]] || { echo "Compromised Secure Pass signer is not allowed" >&2; exit 1; }
+              ;;
+            saurabhkundu1/skycast-weather)
+              [[ "$PACKAGE_NAME" == "com.applify.skycast" ]] || { echo "Unexpected Skycast package ID" >&2; exit 1; }
+              [[ "$EXPECTED_SKYCAST_SIGNER_SHA256" =~ ^[A-Fa-f0-9]{64}$ ]] || { echo "Skycast signer fingerprint is not configured" >&2; exit 1; }
+              [[ "${EXPECTED_SKYCAST_SIGNER_SHA256^^}" != "DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ]] || { echo "Compromised Skycast signer is not allowed" >&2; exit 1; }
+              ;;
+            *)
+              case "${SOURCE_REPO}:${PACKAGE_NAME}" in
+                saurabhkundu1/chronosphere-time-app:com.applify.chronosphere|saurabhkundu1/signal-logger:com.applify.signalatlas|saurabhkundu1/siprise-android:com.applify.watertracker) ;;
+                *) echo "Unsupported source repository/package pair" >&2; exit 1 ;;
+              esac
+              ;;
           esac
 
           [[ "$VERSION_CODE" =~ ^[1-9][0-9]{0,9}$ ]] || { echo "Invalid version code" >&2; exit 1; }
@@ -106,12 +123,23 @@ jobs:
           SIGNER_COUNT="$(grep -Ec '^Signer #[0-9]+ certificate SHA-256 digest:' "$SIGNATURE_REPORT" || true)"
           [[ "$SIGNER_COUNT" == "1" ]] || { echo "APK must have exactly one signing certificate" >&2; exit 1; }
           ACTUAL_APP_FINGERPRINT="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$SIGNATURE_REPORT" | tr -d ':' | tr '[:lower:]' '[:upper:]')"
-          case "$PACKAGE_NAME" in
-            com.applify.securepass|com.applify.skycast) EXPECTED_APP_FINGERPRINT="DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ;;
+          [[ "$ACTUAL_APP_FINGERPRINT" != "DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ]] || { echo "APK uses the exposed signing certificate" >&2; exit 1; }
+          if [[ "$PACKAGE_NAME" == "com.applify.securepass" ]]; then
+            EXPECTED_APP_FINGERPRINT="${EXPECTED_SIGNER_SHA256^^}"
+          elif [[ "$PACKAGE_NAME" == "com.applify.skycast" ]]; then
+            EXPECTED_APP_FINGERPRINT="${EXPECTED_SKYCAST_SIGNER_SHA256^^}"
+          else
+            case "$PACKAGE_NAME" in
             com.applify.chronosphere) EXPECTED_APP_FINGERPRINT="DD3A1F33BF5EEEA8207CDDD09E7682138AF88790BC78E0CD079C7C7C9F976DEE" ;;
             com.applify.signalatlas) EXPECTED_APP_FINGERPRINT="0E56825E6EC1680BA0D6037B5B2E0D9E27C22CC444CF9BC89E0E6FECB686D14E" ;;
+            com.applify.watertracker)
+              [[ "$EXPECTED_WATERTRACKER_SIGNER_SHA256" =~ ^[A-Fa-f0-9]{64}$ ]] || { echo "Siprise app signer fingerprint is not configured" >&2; exit 1; }
+              [[ "${EXPECTED_WATERTRACKER_SIGNER_SHA256^^}" != "DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ]] || { echo "Exposed Siprise signer is not allowed" >&2; exit 1; }
+              EXPECTED_APP_FINGERPRINT="${EXPECTED_WATERTRACKER_SIGNER_SHA256^^}"
+              ;;
             *) echo "No signing identity is pinned for $PACKAGE_NAME" >&2; exit 1 ;;
-          esac
+            esac
+          fi
           [[ "$ACTUAL_APP_FINGERPRINT" == "$EXPECTED_APP_FINGERPRINT" ]] || { echo "APK signing certificate fingerprint mismatch for $PACKAGE_NAME" >&2; exit 1; }
           echo "APK signing certificate fingerprint verified for $PACKAGE_NAME"
 
@@ -122,6 +150,11 @@ jobs:
           [[ "$ACTUAL_PKG" == "$PACKAGE_NAME" ]] || { echo "APK package ID does not match payload" >&2; exit 1; }
           [[ "$ACTUAL_VER_CODE" == "$VERSION_CODE" ]] || { echo "APK version code does not match payload" >&2; exit 1; }
           [[ "$ACTUAL_VER_NAME" == "$VERSION_NAME" ]] || { echo "APK version name does not match payload" >&2; exit 1; }
+          if [[ "$PACKAGE_NAME" == "com.applify.watertracker" ]]; then
+            ACTUAL_MIN_SDK="$(sed -n "s/^sdkVersion:'\([^']*\)'.*/\1/p" <<<"$BADGING")"
+            [[ "$ACTUAL_MIN_SDK" =~ ^[0-9]+$ && "$ACTUAL_MIN_SDK" -ge 33 ]] || { echo "Siprise must support Android 13 (API 33) or newer" >&2; exit 1; }
+            ! grep -q 'android.permission.INTERNET' <<<"$BADGING" || { echo "Siprise APK must not request internet access" >&2; exit 1; }
+          fi
 
           mkdir -p repo
           cp "$TMP_APK" "repo/${PACKAGE_NAME}_${VERSION_CODE}.apk"
@@ -185,6 +218,33 @@ jobs:
           EOF
           fi
 
+      - name: Retire previous APKs after replacement import
+        if: github.event_name == 'repository_dispatch'
+        shell: bash
+        env:
+          SOURCE_REPO: ${{ github.event.client_payload.source_repo }}
+          PACKAGE_NAME: ${{ github.event.client_payload.package_name }}
+        run: |
+          set -euo pipefail
+          case "$SOURCE_REPO:$PACKAGE_NAME" in
+            saurabhkundu1/secure-password-manager:com.applify.securepass|saurabhkundu1/skycast-weather:com.applify.skycast|saurabhkundu1/siprise-android:com.applify.watertracker) ;;
+            *) exit 0 ;;
+          esac
+          for directory in repo archive; do
+            [[ -d "$directory" ]] || continue
+            while IFS= read -r -d '' apk; do
+              report="$RUNNER_TEMP/apk-signature.txt"
+              apksigner verify --verbose --print-certs "$apk" > "$report"
+              fingerprint="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$report" | tr -d ':' | tr '[:lower:]' '[:upper:]')"
+              if [[ "$fingerprint" == "DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ]]; then
+                rm -- "$apk"
+                if [[ "$directory" == repo ]]; then
+                  rm -f -- "repo/provenance/$(basename "${apk%.apk}").json"
+                fi
+              fi
+            done < <(find "$directory" -maxdepth 1 -type f -name "${PACKAGE_NAME}_*.apk" -print0)
+          done
+
       - name: Verify every APK resource table with pinned F-Droid parser
         run: |
           set -euo pipefail
@@ -199,6 +259,7 @@ jobs:
               "com.applify.skycast",
               "com.applify.chronosphere",
               "com.applify.signalatlas",
+              "com.applify.watertracker",
           }
           apk_paths = sorted(Path("repo").glob("*.apk"))
           if not apk_paths:
@@ -224,19 +285,32 @@ jobs:
           REPO_KEYSTORE_BASE64: ${{ secrets.REPO_KEYSTORE_BASE64 }}
           KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
           KEY_PASS: ${{ secrets.KEY_PASS }}
+          EXPECTED_REPO_SIGNER_SHA256: ${{ vars.EXPECTED_REPO_SIGNER_SHA256 }}
+          EXPECTED_SIGNER_SHA256: ${{ vars.EXPECTED_SIGNER_SHA256 }}
+          EXPECTED_SKYCAST_SIGNER_SHA256: ${{ vars.EXPECTED_SKYCAST_SIGNER_SHA256 }}
+          EXPECTED_WATERTRACKER_SIGNER_SHA256: ${{ vars.EXPECTED_WATERTRACKER_SIGNER_SHA256 }}
         run: |
           set -euo pipefail
           umask 077
           : "${REPO_KEYSTORE_BASE64:?REPO_KEYSTORE_BASE64 secret is required}"
           : "${KEYSTORE_PASS:?KEYSTORE_PASS secret is required}"
           : "${KEY_PASS:?KEY_PASS secret is required}"
+          [[ "$EXPECTED_REPO_SIGNER_SHA256" =~ ^[A-Fa-f0-9]{64}$ ]] || { echo "New repository signer fingerprint is not configured" >&2; exit 1; }
+          [[ "${EXPECTED_REPO_SIGNER_SHA256^^}" != "DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ]] || { echo "Compromised repository signer is not allowed" >&2; exit 1; }
+          for app_fingerprint in "${EXPECTED_SIGNER_SHA256:-}" "${EXPECTED_SKYCAST_SIGNER_SHA256:-}" "${EXPECTED_WATERTRACKER_SIGNER_SHA256:-}"; do
+            [[ -z "$app_fingerprint" || "${app_fingerprint^^}" != "${EXPECTED_REPO_SIGNER_SHA256^^}" ]] || { echo "Repository and app signing keys must be separate" >&2; exit 1; }
+          done
+          if [[ -n "${EXPECTED_SIGNER_SHA256:-}" && -n "${EXPECTED_SKYCAST_SIGNER_SHA256:-}" && "${EXPECTED_SIGNER_SHA256^^}" == "${EXPECTED_SKYCAST_SIGNER_SHA256^^}" ]]; then
+            echo "Secure Pass and Skycast must use separate app signing keys" >&2
+            exit 1
+          fi
 
           cleanup() { rm -f keystore.jks config.yml; }
           trap cleanup EXIT
           printf '%s' "$REPO_KEYSTORE_BASE64" | base64 --decode > keystore.jks
           test -s keystore.jks
 
-          EXPECTED_FINGERPRINT="DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255"
+          EXPECTED_FINGERPRINT="${EXPECTED_REPO_SIGNER_SHA256^^}"
           ACTUAL_FINGERPRINT="$(keytool -list -v -keystore keystore.jks -storepass "$KEYSTORE_PASS" -alias securepass 2>/dev/null \
             | sed -n 's/^[[:space:]]*SHA256:[[:space:]]*//p' | head -n 1 | tr -d ':' | tr '[:lower:]' '[:upper:]')"
           test -n "$ACTUAL_FINGERPRINT"

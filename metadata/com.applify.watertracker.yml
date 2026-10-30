@@ -1,0 +1,13 @@
+Categories:
+  - Sports & Health
+License: Apache-2.0
+WebSite: "https://github.com/saurabhkundu1/siprise-android"
+SourceCode: "https://github.com/saurabhkundu1/siprise-android"
+IssueTracker: "https://github.com/saurabhkundu1/siprise-android/issues"
+Name: "Siprise"
+Summary: "Track water intake and receive gentle reminders"
+Description: |-
+  Log quick or custom water amounts, undo the latest entry, set a daily goal, review recent progress, and schedule daytime reminders. Intake history and preferences stay on the device. Works offline and requires Android 13 or newer.
+AutoName: "Siprise"
+CurrentVersion: "1.0.0"
+CurrentVersionCode: 1
