@@ -9,5 +9,5 @@ Summary: "Modern weather app with graphs and thoughtful data visualization"
 Description: |-
   Skycast transforms and visualizes weather data from Open-Meteo.com to give you essential weather information at a glance, while allowing you to dive deeper with graphs.
 AutoName: "Skycast"
-CurrentVersion: "1.0.0"
-CurrentVersionCode: 1
+CurrentVersion: "1.0.1"
+CurrentVersionCode: 2
