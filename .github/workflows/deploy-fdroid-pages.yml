@@ -120,9 +120,9 @@ jobs:
           zip -T "$TMP_APK" >/dev/null
           SIGNATURE_REPORT="$RUNNER_TEMP/apksigner-report.txt"
           apksigner verify --verbose --print-certs "$TMP_APK" > "$SIGNATURE_REPORT"
-          SIGNER_COUNT="$(grep -Ec '^Signer #[0-9]+ certificate SHA-256 digest:' "$SIGNATURE_REPORT" || true)"
+          SIGNER_COUNT="$(grep -Ec '^Signer #[0-9]+:?[[:space:]]+certificate SHA-256 digest:' "$SIGNATURE_REPORT" || true)"
           [[ "$SIGNER_COUNT" == "1" ]] || { echo "APK must have exactly one signing certificate" >&2; exit 1; }
-          ACTUAL_APP_FINGERPRINT="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$SIGNATURE_REPORT" | tr -d ':' | tr '[:lower:]' '[:upper:]')"
+          ACTUAL_APP_FINGERPRINT="$(awk -F': ' '/certificate SHA-256 digest:/ {print $NF; exit}' "$SIGNATURE_REPORT" | tr -d ':' | tr '[:lower:]' '[:upper:]')"
           [[ "$ACTUAL_APP_FINGERPRINT" != "DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ]] || { echo "APK uses the exposed signing certificate" >&2; exit 1; }
           if [[ "$PACKAGE_NAME" == "com.applify.securepass" ]]; then
             EXPECTED_APP_FINGERPRINT="${EXPECTED_SIGNER_SHA256^^}"
@@ -235,7 +235,7 @@ jobs:
             while IFS= read -r -d '' apk; do
               report="$RUNNER_TEMP/apk-signature.txt"
               apksigner verify --verbose --print-certs "$apk" > "$report"
-              fingerprint="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$report" | tr -d ':' | tr '[:lower:]' '[:upper:]')"
+              fingerprint="$(awk -F': ' '/certificate SHA-256 digest:/ {print $NF; exit}' "$report" | tr -d ':' | tr '[:lower:]' '[:upper:]')"
               if [[ "$fingerprint" == "DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ]]; then
                 rm -- "$apk"
                 if [[ "$directory" == repo ]]; then
