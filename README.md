@@ -42,7 +42,7 @@
 | **Web Portal** | [https://saurabhkundu1.github.io/Applify/](https://saurabhkundu1.github.io/Applify/) |
 | **F-Droid Repo URL** | `https://saurabhkundu1.github.io/Applify/repo` |
 | **F-Droid Deep Link** | [`fdroidrepo://saurabhkundu1.github.io/Applify/repo`](fdroidrepo://saurabhkundu1.github.io/Applify/repo) |
-| **SHA-256 Fingerprint** | New repository key fingerprint will be posted after the signing-key migration. |
+| **SHA-256 Fingerprint** | `18F030BE4407811F4DBC2C7D26A52A5261F1C921AEF9C33F350046AA2AE19077` |
 
 ---
 

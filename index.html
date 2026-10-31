@@ -43,38 +43,38 @@
     <h2>Get apps from Applify</h2>
     <p>Add the repository to Droid-ify, F-Droid, or another compatible client to browse and receive updates.</p>
     <div class="actions">
-      <a class="button" href="https://fdroid.link/#https://saurabhkundu1.github.io/Applify/repo?fingerprint=DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255">Add Applify repository</a>
+      <a class="button" href="https://fdroid.link/#https://saurabhkundu1.github.io/Applify/repo?fingerprint=18F030BE4407811F4DBC2C7D26A52A5261F1C921AEF9C33F350046AA2AE19077">Add Applify repository</a>
       <a class="button secondary" href="repo">Open repository page</a>
     </div>
 
     <h2>Available applications</h2>
     <div class="apps">
-      <article>
+      <article data-package="com.applify.securepass">
         <img src="repo/com.applify.securepass/en-US/icon.png" alt="Secure Pass app icon">
-        <div><h3>Secure Pass <small>v1.0.2</small></h3>
+        <div><h3>Secure Pass <small>v1.0.3</small></h3>
           <p>Offline password manager with encrypted vault storage and biometric unlock.</p>
-          <div class="links"><a href="repo/com.applify.securepass_3.apk">Download APK</a><a href="https://github.com/saurabhkundu1/secure-password-manager">Source code</a></div>
+          <div class="links"><a data-apk href="repo/com.applify.securepass_4.apk">Download APK</a><a href="https://github.com/saurabhkundu1/secure-password-manager">Source code</a></div>
         </div>
       </article>
-      <article>
+      <article data-package="com.applify.skycast">
         <img src="repo/com.applify.skycast/en-US/icon.png" alt="Skycast app icon">
-        <div><h3>Skycast <small>v1.0.0</small></h3>
+        <div><h3>Skycast <small>v1.0.1</small></h3>
           <p>Weather forecasts and visualizations powered by Open-Meteo.</p>
-          <div class="links"><a href="repo/com.applify.skycast_1.apk">Download APK</a><a href="https://github.com/saurabhkundu1/skycast-weather">Source code</a></div>
+          <div class="links"><a data-apk href="repo/com.applify.skycast_2.apk">Download APK</a><a href="https://github.com/saurabhkundu1/skycast-weather">Source code</a></div>
         </div>
       </article>
-      <article>
+      <article data-package="com.applify.chronosphere">
         <img src="repo/com.applify.chronosphere/en-US/icon.png" alt="ChronoSphere app icon">
         <div><h3>ChronoSphere <small>v1.0.0</small></h3>
           <p>Save cities around the world and see their local time, including from a home-screen widget.</p>
-          <div class="links"><a href="repo/com.applify.chronosphere_1.apk">Download APK</a><a href="https://github.com/saurabhkundu1/chronosphere-time-app">Source code</a></div>
+          <div class="links"><a data-apk href="repo/com.applify.chronosphere_1.apk">Download APK</a><a href="https://github.com/saurabhkundu1/chronosphere-time-app">Source code</a></div>
         </div>
       </article>
-      <article>
+      <article data-package="com.applify.signalatlas">
         <img src="repo/com.applify.signalatlas/en-US/icon.png" alt="Signal Atlas app icon">
         <div><h3>Signal Atlas <small>v1.0.0</small></h3>
           <p>Opt-in cellular signal logging and approximate-area comparisons through a server you choose.</p>
-          <div class="links"><a href="repo/com.applify.signalatlas_1.apk">Download APK</a><a href="https://github.com/saurabhkundu1/signal-logger">Source code</a></div>
+          <div class="links"><a data-apk href="repo/com.applify.signalatlas_1.apk">Download APK</a><a href="https://github.com/saurabhkundu1/signal-logger">Source code</a></div>
         </div>
       </article>
     </div>
@@ -83,9 +83,21 @@
 
     <h2>Repository details</h2>
     <p>Repository URL: <a href="https://saurabhkundu1.github.io/Applify/repo"><code>https://saurabhkundu1.github.io/Applify/repo</code></a></p>
-    <p>Signing certificate fingerprint (SHA-256):<br><code>DE 62 E0 D3 86 DB 9B 6F C6 16 AD F6 57 3F 45 8A AC 8D 04 F8 73 00 7C 73 B8 58 5F BE F0 96 02 55</code></p>
-    <p>If apps do not appear in Droid-ify, open the Applify repository settings and refresh it. Confirm the repository URL above and the fingerprint before removing and re-adding it.</p>
+    <p>Signing certificate fingerprint (SHA-256):<br><code>18 F0 30 BE 44 07 81 1F 4D BC 2C 7D 26 A5 2A 52 61 F1 C9 21 AE F9 C3 3F 35 00 46 AA 2A E1 90 77</code></p>
+    <p>The repository signing certificate has changed. Remove the old Applify source in Droid-ify, then add it again using the button above so it trusts the replacement certificate.</p>
   </main>
   <footer>Applify · Open-source app distribution</footer>
+  <script>
+    fetch("repo/index-v2.json").then(response => response.json()).then(index => {
+      document.querySelectorAll("[data-package]").forEach(card => {
+        const pkg = index.packages[card.dataset.package];
+        if (!pkg) return;
+        const latest = Object.values(pkg.versions).sort((a, b) => b.manifest.versionCode - a.manifest.versionCode)[0];
+        if (!latest) return;
+        card.querySelector("small").textContent = `v${latest.manifest.versionName}`;
+        card.querySelector("[data-apk]").href = `repo/${latest.file.name.replace("/", "")}`;
+      });
+    }).catch(() => {});
+  </script>
 </body>
 </html>
