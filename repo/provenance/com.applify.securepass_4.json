@@ -1,0 +1,10 @@
+{
+  "sourceRepository": "saurabhkundu1/secure-password-manager",
+  "sourceTag": "v1.0.3",
+  "sourceCommit": "b2792c8616b04149f80db7777d0c1b2882b872dc",
+  "releaseAsset": "SecurePass-v1.0.3-signed.apk",
+  "packageName": "com.applify.securepass",
+  "versionName": "1.0.3",
+  "versionCode": 4,
+  "apkSha256": "f88696f31052939ca39333be9b05dd5b5378196b9ef5cd9e380219255ed10ef3"
+}
