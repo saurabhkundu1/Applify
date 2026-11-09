@@ -18,6 +18,9 @@
 - **🔄 Automated Release CI/CD**: Automatically triggered via `repository_dispatch` when a new release is published in source app repositories, updating F-Droid indices and GitHub Pages without human intervention.
 - **🛡️ Release Verification**: Incoming APKs are checked for ZIP integrity, a valid Android signature, and package/version metadata before indexing.
 - **🔒 Transparent Distribution**: Published APKs are listed with their package metadata and source repository links.
+- **🛂 Permission Transparency**: App cards list Android permissions from the currently published APK manifest, using plain-language labels for common permissions.
+- **🗓️ Release Freshness**: App cards show when their current APK was added to the repository, using the published index date.
+- **🔎 Privacy at a Glance**: Each app card summarizes what stays local and which providers receive data, if any; a warning appears when the published APK version differs from the version reviewed.
 
 ---
 
@@ -28,7 +31,7 @@
 | **Secure Pass** | `com.applify.securepass` | `1.0.3` | Offline password manager. Export an encrypted vault backup, uninstall the old signing identity, then reinstall this same package ID. | [Source](https://github.com/saurabhkundu1/secure-password-manager) |
 | **Skycast** | `com.applify.skycast` | `1.0.1` | Modern weather application with interactive graphs and Open-Meteo visualization. Reinstall after removing the old signing identity. | [Source](https://github.com/saurabhkundu1/skycast-weather) |
 | **ChronoSphere** | `com.applify.chronosphere` | `1.0.0` | Save world cities and track their local times from the app or home-screen widget. | [Source](https://github.com/saurabhkundu1/chronosphere-time-app) |
-| **Signal Atlas** | `com.applify.signalatlas` | `1.0.0` | Opt-in cellular signal logging with on-device history, approximate-area maps, and CSV export. | [Source](https://github.com/saurabhkundu1/signal-logger) |
+| **Signal Atlas** | `com.applify.signalatlas` | `1.0.0` | Opt-in signal logging uploads coarse-area readings to a server the user configures; Applify hosts no shared server. | [Source](https://github.com/saurabhkundu1/signal-logger) |
 | **Siprise** | `com.applify.watertracker` | `1.0.0` | Track water intake and receive gentle reminders. Prepared; APK import is waiting for the signing-key migration. | [Source](https://github.com/saurabhkundu1/siprise-android) |
 
 **Signing-key migration:** New Secure Pass and Skycast releases keep their existing package IDs but use replacement app-signing certificates. Export Secure Pass data and uninstall each old app before installing its replacement. The Applify repository URL stays the same; Droidify may ask you to re-add the repository after its index-signing key changes.

@@ -23,12 +23,24 @@
     .links { display: flex; flex-wrap: wrap; gap: 1rem; }
     a { color: #075c9f; }
     .notice { margin-top: 1.4rem; padding: 1rem; border-left: 4px solid #1769aa; background: #eaf1f8; }
+    .privacy-note { margin: .65rem 0; padding: .6rem .75rem; border-radius: .55rem; background: #edf4f8; font-size: .88rem; }
+    .privacy-note.stale { border: 1px solid #b07a10; }
+    .privacy-warning { margin: -.35rem 0 .8rem; padding: .6rem .75rem; border-radius: .55rem; background: #fff0cf; color: #4a3500; font-size: .88rem; }
+    .updated { color: #526173; font-size: .85rem; }
+    .permissions { margin: .4rem 0 .8rem; font-size: .88rem; }
+    .permissions summary { cursor: pointer; font-weight: 650; }
+    .permission-help { margin: .3rem 0; color: #526173; font-size: .8rem; }
+    .permissions ul { margin: .3rem 0 0; padding-left: 1.25rem; }
     code { overflow-wrap: anywhere; }
     footer { padding: 1.5rem; text-align: center; color: #526173; }
     @media (prefers-color-scheme: dark) {
       body { background: #101821; color: #e6edf5; }
       article { background: #182431; border-color: #34485a; }
-      .button.secondary, .notice { background: #20374c; color: #e6edf5; }
+      .button.secondary, .notice, .privacy-note { background: #20374c; color: #e6edf5; }
+      .privacy-note.stale { border-color: #d6aa58; }
+      .privacy-warning { background: #493b20; color: #ffe6ad; }
+      .updated { color: #a7b5c4; }
+      .permission-help { color: #a7b5c4; }
       a { color: #8bc8ff; }
       footer { color: #a7b5c4; }
     }
@@ -47,33 +59,49 @@
       <a class="button secondary" href="repo">Open repository page</a>
     </div>
 
+    <h2>Privacy at a glance</h2>
+    <p>Each note describes the version currently published here and what happens when you use an online feature. A warning appears if the published APK version differs from the version checked.</p>
+    <noscript><p class="notice">JavaScript is needed to load current APK versions and permissions from the repository index. Privacy notes remain visible.</p></noscript>
+
     <h2>Available applications</h2>
     <div class="apps">
-      <article data-package="com.applify.securepass">
+      <article data-package="com.applify.securepass" data-privacy-version="1.0.3">
         <img src="repo/com.applify.securepass/en-US/icon.png" alt="Secure Pass app icon">
         <div><h3>Secure Pass <small>v1.0.3</small></h3>
           <p>Offline password manager with encrypted vault storage and biometric unlock.</p>
+          <p class="updated" data-published>Publication date loads from the repository index.</p>
+          <p class="privacy-note" data-privacy-note><strong>Privacy · checked for v1.0.3:</strong> Vault stays on-device; there is no internet permission. Backups are encrypted and exported only when you choose.</p>
+          <details class="permissions"><summary data-permissions-summary>Permissions in the published APK</summary><p class="permission-help">Standard Android permissions declared by this APK; some are system-only and do not show a permission prompt.</p><ul data-permissions><li>Permission list loads from the repository index.</li></ul></details>
           <div class="links"><a data-apk href="repo/com.applify.securepass_4.apk">Download APK</a><a href="https://github.com/saurabhkundu1/secure-password-manager">Source code</a></div>
         </div>
       </article>
-      <article data-package="com.applify.skycast">
+      <article data-package="com.applify.skycast" data-privacy-version="1.0.1">
         <img src="repo/com.applify.skycast/en-US/icon.png" alt="Skycast app icon">
         <div><h3>Skycast <small>v1.0.1</small></h3>
           <p>Weather forecasts and visualizations powered by Open-Meteo.</p>
+          <p class="updated" data-published>Publication date loads from the repository index.</p>
+          <p class="privacy-note" data-privacy-note><strong>Privacy · checked for v1.0.1:</strong> City searches go to Open-Meteo geocoding; optional device coordinates are sent there for weather and time-zone data.</p>
+          <details class="permissions"><summary data-permissions-summary>Permissions in the published APK</summary><p class="permission-help">Standard Android permissions declared by this APK; some are system-only and do not show a permission prompt.</p><ul data-permissions><li>Permission list loads from the repository index.</li></ul></details>
           <div class="links"><a data-apk href="repo/com.applify.skycast_2.apk">Download APK</a><a href="https://github.com/saurabhkundu1/skycast-weather">Source code</a></div>
         </div>
       </article>
-      <article data-package="com.applify.chronosphere">
+      <article data-package="com.applify.chronosphere" data-privacy-version="1.0.0">
         <img src="repo/com.applify.chronosphere/en-US/icon.png" alt="ChronoSphere app icon">
         <div><h3>ChronoSphere <small>v1.0.0</small></h3>
           <p>Save cities around the world and see their local time, including from a home-screen widget.</p>
+          <p class="updated" data-published>Publication date loads from the repository index.</p>
+          <p class="privacy-note" data-privacy-note><strong>Privacy · checked for v1.0.0:</strong> Saved cities stay on-device. The app does not request internet or location access.</p>
+          <details class="permissions"><summary data-permissions-summary>Permissions in the published APK</summary><p class="permission-help">Standard Android permissions declared by this APK; some are system-only and do not show a permission prompt.</p><ul data-permissions><li>Permission list loads from the repository index.</li></ul></details>
           <div class="links"><a data-apk href="repo/com.applify.chronosphere_1.apk">Download APK</a><a href="https://github.com/saurabhkundu1/chronosphere-time-app">Source code</a></div>
         </div>
       </article>
-      <article data-package="com.applify.signalatlas">
+      <article data-package="com.applify.signalatlas" data-privacy-version="1.0.0">
         <img src="repo/com.applify.signalatlas/en-US/icon.png" alt="Signal Atlas app icon">
         <div><h3>Signal Atlas <small>v1.0.0</small></h3>
           <p>Opt-in cellular signal logging and approximate-area comparisons through a server you choose.</p>
+          <p class="updated" data-published>Publication date loads from the repository index.</p>
+          <p class="privacy-note" data-privacy-note><strong>Privacy · checked for v1.0.0:</strong> Logging uploads carrier, network, signal, and an approximate 5 km area to the HTTPS server you configure; its operator controls retention and access. Applify hosts no shared server.</p>
+          <details class="permissions"><summary data-permissions-summary>Permissions in the published APK</summary><p class="permission-help">Standard Android permissions declared by this APK; some are system-only and do not show a permission prompt.</p><ul data-permissions><li>Permission list loads from the repository index.</li></ul></details>
           <div class="links"><a data-apk href="repo/com.applify.signalatlas_1.apk">Download APK</a><a href="https://github.com/saurabhkundu1/signal-logger">Source code</a></div>
         </div>
       </article>
@@ -88,16 +116,72 @@
   </main>
   <footer>Applify · Open-source app distribution</footer>
   <script>
+    const permissionLabels = {
+      "android.permission.ACCESS_COARSE_LOCATION": "Approximate location",
+      "android.permission.ACCESS_NETWORK_STATE": "Network status",
+      "android.permission.FOREGROUND_SERVICE": "Foreground service",
+      "android.permission.FOREGROUND_SERVICE_LOCATION": "Foreground location service",
+      "android.permission.INTERNET": "Internet access",
+      "android.permission.POST_NOTIFICATIONS": "Notifications",
+      "android.permission.READ_PHONE_STATE": "Phone and SIM status",
+      "android.permission.USE_BIOMETRIC": "Biometric authentication",
+      "android.permission.USE_FINGERPRINT": "Biometric authentication"
+    };
+
+    function showRepositoryFallback(card, message) {
+      const list = card.querySelector("[data-permissions]");
+      const item = document.createElement("li");
+      item.textContent = message;
+      list.replaceChildren(item);
+      card.querySelector("[data-permissions-summary]").textContent = "Permission details unavailable";
+      card.querySelector("[data-published]").textContent = "Publication date unavailable.";
+    }
+
     fetch("repo/index-v2.json").then(response => response.json()).then(index => {
       document.querySelectorAll("[data-package]").forEach(card => {
         const pkg = index.packages[card.dataset.package];
-        if (!pkg) return;
+        if (!pkg) {
+          showRepositoryFallback(card, "No published manifest was found. Check the repository index.");
+          return;
+        }
         const latest = Object.values(pkg.versions).sort((a, b) => b.manifest.versionCode - a.manifest.versionCode)[0];
-        if (!latest) return;
+        if (!latest) {
+          showRepositoryFallback(card, "No published manifest was found. Check the repository index.");
+          return;
+        }
         card.querySelector("small").textContent = `v${latest.manifest.versionName}`;
         card.querySelector("[data-apk]").href = `repo/${latest.file.name.replace("/", "")}`;
+        const publishedAt = new Date(latest.added);
+        card.querySelector("[data-published]").textContent = Number.isNaN(publishedAt.getTime())
+          ? "Publication date unavailable."
+          : `Added to repository ${publishedAt.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}`;
+        card.querySelector("[data-permissions-summary]").textContent = `Permissions in published v${latest.manifest.versionName} APK`;
+        const rawPermissions = latest.manifest.usesPermission ?? [];
+        const names = (Array.isArray(rawPermissions) ? rawPermissions : [rawPermissions])
+          .map(permission => permission?.name)
+          .filter(name => typeof name === "string" && name.startsWith("android.permission."));
+        const labels = [...new Set(names.map(name => permissionLabels[name] ?? name))].sort((a, b) => a.localeCompare(b));
+        const list = card.querySelector("[data-permissions]");
+        list.replaceChildren(...(labels.length ? labels : ["No Android permissions declared."]).map(label => {
+          const item = document.createElement("li");
+          item.textContent = label;
+          return item;
+        }));
+        const privacyNote = card.querySelector("[data-privacy-note]");
+        if (privacyNote && card.dataset.privacyVersion !== latest.manifest.versionName) {
+          privacyNote.classList.add("stale");
+          const warning = document.createElement("p");
+          warning.className = "privacy-warning";
+          warning.setAttribute("role", "status");
+          warning.textContent = `This note covers v${card.dataset.privacyVersion}; the published APK is v${latest.manifest.versionName}. Its privacy details have not been reviewed.`;
+          privacyNote.after(warning);
+        }
       });
-    }).catch(() => {});
+    }).catch(() => {
+      document.querySelectorAll("[data-package]").forEach(card => {
+        showRepositoryFallback(card, "Could not load permissions. Check the repository index before installing.");
+      });
+    });
   </script>
 </body>
 </html>
