@@ -6,6 +6,31 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      source_repo:
+        description: 'Source repository (e.g. saurabhkundu1/siprise-android)'
+        required: false
+        type: string
+      package_name:
+        description: 'Package name (e.g. com.applify.watertracker)'
+        required: false
+        type: string
+      version:
+        description: 'Version name (e.g. 1.0.0)'
+        required: false
+        type: string
+      version_code:
+        description: 'Version code (e.g. 1)'
+        required: false
+        type: string
+      tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: false
+        type: string
+      asset_name:
+        description: 'Asset name (e.g. siprise-1.0.0.apk)'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -63,18 +88,18 @@ jobs:
           command -v unzip
 
       - name: Validate and import release APK
-        if: github.event_name == 'repository_dispatch'
+        if: github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.package_name != '')
         shell: bash
         env:
-          SOURCE_REPO: ${{ github.event.client_payload.source_repo }}
-          PACKAGE_NAME: ${{ github.event.client_payload.package_name }}
+          SOURCE_REPO: ${{ github.event.client_payload.source_repo || inputs.source_repo }}
+          PACKAGE_NAME: ${{ github.event.client_payload.package_name || inputs.package_name }}
           PACKAGE_NAME_FALLBACK: ${{ github.event.client_payload.app }}
-          VERSION_NAME: ${{ github.event.client_payload.version }}
+          VERSION_NAME: ${{ github.event.client_payload.version || inputs.version }}
           VERSION_NAME_FALLBACK: ${{ github.event.client_payload.version_name }}
-          VERSION_CODE: ${{ github.event.client_payload.version_code }}
-          TAG_NAME: ${{ github.event.client_payload.tag }}
+          VERSION_CODE: ${{ github.event.client_payload.version_code || inputs.version_code }}
+          TAG_NAME: ${{ github.event.client_payload.tag || inputs.tag }}
           TAG_NAME_FALLBACK: ${{ github.event.client_payload.tag_name }}
-          ASSET_NAME: ${{ github.event.client_payload.asset_name }}
+          ASSET_NAME: ${{ github.event.client_payload.asset_name || inputs.asset_name }}
           ASSET_NAME_FALLBACK: ${{ github.event.client_payload.apk_name }}
           EXPECTED_SIGNER_SHA256: 41941F5086C0F8EF03C58DFB1B148F4244258362EC2DA51F1348C10E8DDEDE1F
           EXPECTED_SKYCAST_SIGNER_SHA256: 8873C9944377ED68DCDB98C5F1FDCCE10B4BD8359DA0271CC33931DF58EE97E7
@@ -218,8 +243,9 @@ jobs:
               f.write("\n")
           PY
 
-      - name: Ensure Skycast metadata exists
+      - name: Ensure app metadata files exist
         run: |
+          mkdir -p metadata
           if [ ! -f metadata/com.applify.skycast.yml ]; then
             cat > metadata/com.applify.skycast.yml <<'EOF'
           Categories:
@@ -233,21 +259,38 @@ jobs:
           Description: |-
             Skycast transforms and visualizes weather data from Open-Meteo.com to give you essential weather information at a glance, while allowing you to dive deeper with graphs.
           AutoName: "Skycast"
+          CurrentVersion: "1.0.1"
+          CurrentVersionCode: 2
+          EOF
+          fi
+          if [ ! -f metadata/com.applify.watertracker.yml ]; then
+            cat > metadata/com.applify.watertracker.yml <<'EOF'
+          Categories:
+            - Sports & Health
+          License: Apache-2.0
+          WebSite: "https://github.com/saurabhkundu1/siprise-android"
+          SourceCode: "https://github.com/saurabhkundu1/siprise-android"
+          IssueTracker: "https://github.com/saurabhkundu1/siprise-android/issues"
+          Name: "Siprise"
+          Summary: "Track water intake and receive gentle reminders"
+          Description: |-
+            Log quick or custom water amounts, undo the latest entry, set a daily goal, review recent progress, and schedule daytime reminders. Intake history and preferences stay on the device. Works offline and requires Android 13 or newer.
+          AutoName: "Siprise"
           CurrentVersion: "1.0.0"
           CurrentVersionCode: 1
           EOF
           fi
 
       - name: Retire previous APKs after replacement import
-        if: github.event_name == 'repository_dispatch'
+        if: github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.package_name != '')
         shell: bash
         env:
-          SOURCE_REPO: ${{ github.event.client_payload.source_repo }}
-          PACKAGE_NAME: ${{ github.event.client_payload.package_name }}
+          SOURCE_REPO: ${{ github.event.client_payload.source_repo || inputs.source_repo }}
+          PACKAGE_NAME: ${{ github.event.client_payload.package_name || inputs.package_name }}
         run: |
           set -euo pipefail
           case "$SOURCE_REPO:$PACKAGE_NAME" in
-            saurabhkundu1/secure-password-manager:com.applify.securepass|saurabhkundu1/skycast-weather:com.applify.skycast|saurabhkundu1/siprise-android:com.applify.watertracker) ;;
+            saurabhkundu1/secure-password-manager:com.applify.securepass|saurabhkundu1/skycast-weather:com.applify.skycast|saurabhkundu1/siprise-android:com.applify.watertracker|saurabhkundu1/chronosphere-time-app:com.applify.chronosphere|saurabhkundu1/signal-logger:com.applify.signalatlas) ;;
             *) exit 0 ;;
           esac
           for directory in repo archive; do
@@ -299,6 +342,64 @@ jobs:
               print(f"Parsed {path}: {package}, Android resources OK")
           PY
 
+      - name: Sync metadata versions with repository APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, re, subprocess
+          from pathlib import Path
+
+          metadata_dir = Path("metadata")
+          repo_dir = Path("repo")
+          if not metadata_dir.is_dir() or not repo_dir.is_dir():
+              print("Metadata or repo directory missing; skipping version sync")
+              exit(0)
+
+          for meta_file in sorted(metadata_dir.glob("*.yml")):
+              pkg = meta_file.stem
+              apks = list(repo_dir.glob(f"{pkg}_*.apk"))
+              if not apks:
+                  continue
+
+              highest_code = -1
+              highest_apk = None
+              for apk in apks:
+                  m = re.search(r"_(\d+)\.apk$", apk.name)
+                  if m:
+                      code = int(m.group(1))
+                      if code > highest_code:
+                          highest_code = code
+                          highest_apk = apk
+
+              if highest_code <= 0 or not highest_apk:
+                  continue
+
+              try:
+                  badging = subprocess.check_output(
+                      ["aapt", "dump", "badging", str(highest_apk)],
+                      text=True,
+                      stderr=subprocess.DEVNULL
+                  )
+                  m_ver = re.search(r"versionName='([^']+)'", badging)
+                  version_name = m_ver.group(1) if m_ver else None
+              except Exception as e:
+                  print(f"Warning: could not dump badging for {highest_apk}: {e}")
+                  continue
+
+              if not version_name:
+                  continue
+
+              text = meta_file.read_text(encoding="utf-8")
+              new_text, ver_c = re.subn(r'(?m)^CurrentVersion:.*$', f'CurrentVersion: "{version_name}"', text)
+              new_text, code_c = re.subn(r'(?m)^CurrentVersionCode:.*$', f'CurrentVersionCode: {highest_code}', new_text)
+              if ver_c > 0 and code_c > 0 and new_text != text:
+                  meta_file.write_text(new_text, encoding="utf-8")
+                  print(f"Updated {meta_file.name}: CurrentVersion={version_name}, CurrentVersionCode={highest_code}")
+              else:
+                  print(f"{meta_file.name} is aligned with {highest_apk.name}")
+          PY
+
       - name: Generate and verify signed F-Droid indexes
         shell: bash
         env:
@@ -317,7 +418,7 @@ jobs:
           : "${KEY_PASS:?KEY_PASS secret is required}"
           [[ "$EXPECTED_REPO_SIGNER_SHA256" =~ ^[A-Fa-f0-9]{64}$ ]] || { echo "New repository signer fingerprint is not configured" >&2; exit 1; }
           [[ "${EXPECTED_REPO_SIGNER_SHA256^^}" != "DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ]] || { echo "Compromised repository signer is not allowed" >&2; exit 1; }
-          for app_fingerprint in "${EXPECTED_SIGNER_SHA256:-}" "${EXPECTED_SKYCAST_SIGNER_SHA256:-}" "${EXPECTED_WATERTRACKER_SIGNER_SHA256:-}"; do
+          for app_fingerprint in "${EXPECTED_SIGNER_SHA256:-}" "${EXPECTED_SKYCAST_SIGNER_SHA256:-}" "${EXPECTED_WATERTRACKER_SIGNER_SHA256:-}" "81518454D887A5972BF9DC49DBB940DCAD1B75660D18F668729983DCF68EA958" "342C35A742AFF0ED4EADA12E23E70D2CFE06053EFE6B3B097A3AB1E43A22402E"; do
             [[ -z "$app_fingerprint" || "${app_fingerprint^^}" != "${EXPECTED_REPO_SIGNER_SHA256^^}" ]] || { echo "Repository and app signing keys must be separate" >&2; exit 1; }
           done
           if [[ -n "${EXPECTED_SIGNER_SHA256:-}" && -n "${EXPECTED_SKYCAST_SIGNER_SHA256:-}" && "${EXPECTED_SIGNER_SHA256^^}" == "${EXPECTED_SKYCAST_SIGNER_SHA256^^}" ]]; then
@@ -491,9 +592,11 @@ jobs:
           git apply --binary generated.patch
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config http.postBuffer 524288000
           git add metadata/ repo/ status/ icons/ index* entry*
           if ! git diff --cached --quiet; then
             git commit -m "auto: import and publish release"
+            git pull --rebase origin main || true
             git push origin HEAD:main
           fi
 
