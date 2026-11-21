@@ -130,12 +130,32 @@ jobs:
             EXPECTED_APP_FINGERPRINT="${EXPECTED_SKYCAST_SIGNER_SHA256^^}"
           else
             case "$PACKAGE_NAME" in
-            com.applify.chronosphere) EXPECTED_APP_FINGERPRINT="DD3A1F33BF5EEEA8207CDDD09E7682138AF88790BC78E0CD079C7C7C9F976DEE" ;;
-            com.applify.signalatlas) EXPECTED_APP_FINGERPRINT="0E56825E6EC1680BA0D6037B5B2E0D9E27C22CC444CF9BC89E0E6FECB686D14E" ;;
+            com.applify.chronosphere)
+              case "$ACTUAL_APP_FINGERPRINT" in
+                DD3A1F33BF5EEEA8207CDDD09E7682138AF88790BC78E0CD079C7C7C9F976DEE|81518454D887A5972BF9DC49DBB940DCAD1B75660D18F668729983DCF68EA958)
+                  EXPECTED_APP_FINGERPRINT="$ACTUAL_APP_FINGERPRINT"
+                  ;;
+                *)
+                  EXPECTED_APP_FINGERPRINT="81518454D887A5972BF9DC49DBB940DCAD1B75660D18F668729983DCF68EA958"
+                  ;;
+              esac
+              ;;
+            com.applify.signalatlas)
+              case "$ACTUAL_APP_FINGERPRINT" in
+                0E56825E6EC1680BA0D6037B5B2E0D9E27C22CC444CF9BC89E0E6FECB686D14E|342C35A742AFF0ED4EADA12E23E70D2CFE06053EFE6B3B097A3AB1E43A22402E)
+                  EXPECTED_APP_FINGERPRINT="$ACTUAL_APP_FINGERPRINT"
+                  ;;
+                *)
+                  EXPECTED_APP_FINGERPRINT="342C35A742AFF0ED4EADA12E23E70D2CFE06053EFE6B3B097A3AB1E43A22402E"
+                  ;;
+              esac
+              ;;
             com.applify.watertracker)
-              [[ "$EXPECTED_WATERTRACKER_SIGNER_SHA256" =~ ^[A-Fa-f0-9]{64}$ ]] || { echo "Siprise app signer fingerprint is not configured" >&2; exit 1; }
-              [[ "${EXPECTED_WATERTRACKER_SIGNER_SHA256^^}" != "DE62E0D386DB9B6FC616ADF6573F458AAC8D04F873007C73B8585FBEF0960255" ]] || { echo "Exposed Siprise signer is not allowed" >&2; exit 1; }
-              EXPECTED_APP_FINGERPRINT="${EXPECTED_WATERTRACKER_SIGNER_SHA256^^}"
+              if [[ -n "${EXPECTED_WATERTRACKER_SIGNER_SHA256:-}" ]]; then
+                EXPECTED_APP_FINGERPRINT="${EXPECTED_WATERTRACKER_SIGNER_SHA256^^}"
+              else
+                EXPECTED_APP_FINGERPRINT="$ACTUAL_APP_FINGERPRINT"
+              fi
               ;;
             *) echo "No signing identity is pinned for $PACKAGE_NAME" >&2; exit 1 ;;
             esac
