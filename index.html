@@ -6,11 +6,24 @@
   <meta name="theme-color" content="#123c63">
   <meta name="description" content="Applify: Android apps by Saurabh Kundu, available from the Applify F-Droid repository.">
   <title>Applify — Android apps</title>
+  <script>
+    (function() {
+      const saved = localStorage.getItem("applify-theme");
+      if (saved === "dark" || saved === "light") {
+        document.documentElement.setAttribute("data-theme", saved);
+      }
+    })();
+  </script>
   <style>
     :root { color-scheme: light dark; font: 16px/1.55 system-ui, sans-serif; }
     body { margin: 0; background: #f3f6fa; color: #152337; }
     header { padding: 2.5rem max(1.2rem, calc((100% - 960px)/2)); background: #123c63; color: white; }
+    .header-content { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.2rem; }
     header h1 { margin: 0; font-size: clamp(2rem, 6vw, 3rem); }
+    .theme-switcher { display: inline-flex; background: rgba(0,0,0,0.22); border-radius: 2rem; padding: 4px; gap: 4px; align-self: flex-start; margin-top: .4rem; }
+    .theme-btn { background: transparent; border: none; color: #d0e4f7; padding: .4rem .75rem; border-radius: 1.5rem; font-size: .85rem; font-weight: 600; cursor: pointer; transition: background .18s, color .18s; }
+    .theme-btn:hover { color: white; }
+    .theme-btn.active { background: white; color: #123c63; }
     main { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.2rem 3rem; }
     .actions { display: flex; flex-wrap: wrap; gap: .8rem; margin: 1rem 0 2rem; }
     .button { display: inline-block; padding: .7rem 1rem; border-radius: .55rem; background: #1769aa; color: white; text-decoration: none; font-weight: 650; }
@@ -34,22 +47,45 @@
     code { overflow-wrap: anywhere; }
     footer { padding: 1.5rem; text-align: center; color: #526173; }
     @media (prefers-color-scheme: dark) {
-      body { background: #101821; color: #e6edf5; }
-      article { background: #182431; border-color: #34485a; }
-      .button.secondary, .notice, .privacy-note { background: #20374c; color: #e6edf5; }
-      .privacy-note.stale { border-color: #d6aa58; }
-      .privacy-warning { background: #493b20; color: #ffe6ad; }
-      .updated { color: #a7b5c4; }
-      .permission-help { color: #a7b5c4; }
-      a { color: #8bc8ff; }
-      footer { color: #a7b5c4; }
+      :root:not([data-theme="light"]) body { background: #101821; color: #e6edf5; }
+      :root:not([data-theme="light"]) article { background: #182431; border-color: #34485a; }
+      :root:not([data-theme="light"]) .button.secondary,
+      :root:not([data-theme="light"]) .notice,
+      :root:not([data-theme="light"]) .privacy-note { background: #20374c; color: #e6edf5; }
+      :root:not([data-theme="light"]) .privacy-note.stale { border-color: #d6aa58; }
+      :root:not([data-theme="light"]) .privacy-warning { background: #493b20; color: #ffe6ad; }
+      :root:not([data-theme="light"]) .updated { color: #a7b5c4; }
+      :root:not([data-theme="light"]) .permission-help { color: #a7b5c4; }
+      :root:not([data-theme="light"]) a { color: #8bc8ff; }
+      :root:not([data-theme="light"]) footer { color: #a7b5c4; }
     }
+    :root[data-theme="dark"] body { background: #101821; color: #e6edf5; }
+    :root[data-theme="dark"] article { background: #182431; border-color: #34485a; }
+    :root[data-theme="dark"] .button.secondary,
+    :root[data-theme="dark"] .notice,
+    :root[data-theme="dark"] .privacy-note { background: #20374c; color: #e6edf5; }
+    :root[data-theme="dark"] .privacy-note.stale { border-color: #d6aa58; }
+    :root[data-theme="dark"] .privacy-warning { background: #493b20; color: #ffe6ad; }
+    :root[data-theme="dark"] .updated { color: #a7b5c4; }
+    :root[data-theme="dark"] .permission-help { color: #a7b5c4; }
+    :root[data-theme="dark"] a { color: #8bc8ff; }
+    :root[data-theme="dark"] footer { color: #a7b5c4; }
+    :root[data-theme="dark"] .theme-btn.active { background: #8bc8ff; color: #101821; }
   </style>
 </head>
 <body>
   <header>
-    <h1>Applify</h1>
-    <p>Android apps by Saurabh Kundu, distributed through an F-Droid-compatible repository.</p>
+    <div class="header-content">
+      <div>
+        <h1>Applify</h1>
+        <p>Android apps by Saurabh Kundu, distributed through an F-Droid-compatible repository.</p>
+      </div>
+      <div class="theme-switcher" role="radiogroup" aria-label="Theme mode selection">
+        <button type="button" class="theme-btn" data-theme-val="light" aria-pressed="false" title="Light theme">☀️ Light</button>
+        <button type="button" class="theme-btn" data-theme-val="dark" aria-pressed="false" title="Dark theme">🌙 Dark</button>
+        <button type="button" class="theme-btn active" data-theme-val="auto" aria-pressed="true" title="Follow system theme">💻 Auto</button>
+      </div>
+    </div>
   </header>
   <main>
     <h2>Get apps from Applify</h2>
@@ -191,6 +227,32 @@
     }).catch(() => {
       document.querySelectorAll("[data-package]").forEach(card => {
         showRepositoryFallback(card, "Could not load permissions. Check the repository index before installing.");
+      });
+    });
+
+    const themeButtons = document.querySelectorAll(".theme-btn");
+    const activeTheme = localStorage.getItem("applify-theme") || "auto";
+
+    function applyThemeSelection(theme) {
+      if (theme === "dark" || theme === "light") {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("applify-theme", theme);
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.removeItem("applify-theme");
+      }
+      themeButtons.forEach(btn => {
+        const matches = btn.dataset.themeVal === theme;
+        btn.classList.toggle("active", matches);
+        btn.setAttribute("aria-pressed", matches ? "true" : "false");
+      });
+    }
+
+    applyThemeSelection(activeTheme);
+
+    themeButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        applyThemeSelection(btn.dataset.themeVal);
       });
     });
   </script>
