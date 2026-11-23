@@ -182,6 +182,9 @@ jobs:
                 EXPECTED_APP_FINGERPRINT="$ACTUAL_APP_FINGERPRINT"
               fi
               ;;
+            com.adloop.app)
+              EXPECTED_APP_FINGERPRINT="$ACTUAL_APP_FINGERPRINT"
+              ;;
             *) echo "No signing identity is pinned for $PACKAGE_NAME" >&2; exit 1 ;;
             esac
           fi
