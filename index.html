@@ -8,10 +8,12 @@
   <title>Applify — Android apps</title>
   <script>
     (function() {
-      const saved = localStorage.getItem("applify-theme");
-      if (saved === "dark" || saved === "light") {
-        document.documentElement.setAttribute("data-theme", saved);
-      }
+      try {
+        const saved = localStorage.getItem("applify-theme");
+        if (saved === "dark" || saved === "light") {
+          document.documentElement.setAttribute("data-theme", saved);
+        }
+      } catch (e) {}
     })();
   </script>
   <style>
@@ -81,9 +83,9 @@
         <p>Android apps by Saurabh Kundu, distributed through an F-Droid-compatible repository.</p>
       </div>
       <div class="theme-switcher" role="radiogroup" aria-label="Theme mode selection">
-        <button type="button" class="theme-btn" data-theme-val="light" aria-pressed="false" title="Light theme">☀️ Light</button>
-        <button type="button" class="theme-btn" data-theme-val="dark" aria-pressed="false" title="Dark theme">🌙 Dark</button>
-        <button type="button" class="theme-btn active" data-theme-val="auto" aria-pressed="true" title="Follow system theme">💻 Auto</button>
+        <button type="button" class="theme-btn" role="radio" data-theme-val="light" aria-checked="false" title="Light theme">☀️ Light</button>
+        <button type="button" class="theme-btn" role="radio" data-theme-val="dark" aria-checked="false" title="Dark theme">🌙 Dark</button>
+        <button type="button" class="theme-btn active" role="radio" data-theme-val="auto" aria-checked="true" title="Follow system theme">💻 Auto</button>
       </div>
     </div>
   </header>
@@ -207,7 +209,7 @@
           return;
         }
         card.querySelector("small").textContent = `v${latest.manifest.versionName}`;
-        card.querySelector("[data-apk]").href = `repo/${latest.file.name.replace("/", "")}`;
+        card.querySelector("[data-apk]").href = `repo/${latest.file.name.replace(/^\/+/, "")}`;
         const publishedAt = new Date(latest.added);
         card.querySelector("[data-published]").textContent = Number.isNaN(publishedAt.getTime())
           ? "Publication date unavailable."
@@ -241,24 +243,35 @@
     });
 
     const themeButtons = document.querySelectorAll(".theme-btn");
-    const activeTheme = localStorage.getItem("applify-theme") || "auto";
+    let activeTheme = "auto";
+    try {
+      activeTheme = localStorage.getItem("applify-theme") || "auto";
+    } catch (e) {}
 
     function applyThemeSelection(theme) {
       if (theme === "dark" || theme === "light") {
         document.documentElement.setAttribute("data-theme", theme);
-        localStorage.setItem("applify-theme", theme);
+        try { localStorage.setItem("applify-theme", theme); } catch (e) {}
       } else {
         document.documentElement.removeAttribute("data-theme");
-        localStorage.removeItem("applify-theme");
+        try { localStorage.removeItem("applify-theme"); } catch (e) {}
       }
       themeButtons.forEach(btn => {
         const matches = btn.dataset.themeVal === theme;
         btn.classList.toggle("active", matches);
-        btn.setAttribute("aria-pressed", matches ? "true" : "false");
+        btn.setAttribute("aria-checked", matches ? "true" : "false");
       });
     }
 
     applyThemeSelection(activeTheme);
+
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      let saved = null;
+      try { saved = localStorage.getItem("applify-theme"); } catch (e) {}
+      if (!saved) {
+        applyThemeSelection("auto");
+      }
+    });
 
     themeButtons.forEach(btn => {
       btn.addEventListener("click", () => {
