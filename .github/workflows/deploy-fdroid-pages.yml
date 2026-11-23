@@ -125,7 +125,7 @@ jobs:
               ;;
             *)
               case "${SOURCE_REPO}:${PACKAGE_NAME}" in
-                saurabhkundu1/chronosphere-time-app:com.applify.chronosphere|saurabhkundu1/signal-logger:com.applify.signalatlas|saurabhkundu1/siprise-android:com.applify.watertracker) ;;
+                saurabhkundu1/chronosphere-time-app:com.applify.chronosphere|saurabhkundu1/signal-logger:com.applify.signalatlas|saurabhkundu1/siprise-android:com.applify.watertracker|saurabhkundu1/adloop-ads:com.adloop.app) ;;
                 *) echo "Unsupported source repository/package pair" >&2; exit 1 ;;
               esac
               ;;
@@ -289,8 +289,8 @@ jobs:
           PACKAGE_NAME: ${{ github.event.client_payload.package_name || inputs.package_name }}
         run: |
           set -euo pipefail
-          case "$SOURCE_REPO:$PACKAGE_NAME" in
-            saurabhkundu1/secure-password-manager:com.applify.securepass|saurabhkundu1/skycast-weather:com.applify.skycast|saurabhkundu1/siprise-android:com.applify.watertracker|saurabhkundu1/chronosphere-time-app:com.applify.chronosphere|saurabhkundu1/signal-logger:com.applify.signalatlas) ;;
+            case "$SOURCE_REPO:$PACKAGE_NAME" in
+            saurabhkundu1/secure-password-manager:com.applify.securepass|saurabhkundu1/skycast-weather:com.applify.skycast|saurabhkundu1/siprise-android:com.applify.watertracker|saurabhkundu1/chronosphere-time-app:com.applify.chronosphere|saurabhkundu1/signal-logger:com.applify.signalatlas|saurabhkundu1/adloop-ads:com.adloop.app) ;;
             *) exit 0 ;;
           esac
           for directory in repo archive; do
@@ -323,6 +323,7 @@ jobs:
               "com.applify.chronosphere",
               "com.applify.signalatlas",
               "com.applify.watertracker",
+              "com.adloop.app",
           }
           apk_paths = sorted(Path("repo").glob("*.apk"))
           if not apk_paths:

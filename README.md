@@ -28,11 +28,12 @@
 
 | Application | Package ID | Version | Description | Links |
 | :--- | :--- | :--- | :--- | :--- |
-| **Secure Pass** | `com.applify.securepass` | `1.0.3` | Offline password manager. Export an encrypted vault backup, uninstall the old signing identity, then reinstall this same package ID. | [Source](https://github.com/saurabhkundu1/secure-password-manager) |
-| **Skycast** | `com.applify.skycast` | `1.0.1` | Modern weather application with interactive graphs and Open-Meteo visualization. Reinstall after removing the old signing identity. | [Source](https://github.com/saurabhkundu1/skycast-weather) |
-| **ChronoSphere** | `com.applify.chronosphere` | `1.0.0` | Save world cities and track their local times from the app or home-screen widget. | [Source](https://github.com/saurabhkundu1/chronosphere-time-app) |
-| **Signal Atlas** | `com.applify.signalatlas` | `1.0.0` | Opt-in signal logging uploads coarse-area readings to a server the user configures; Applify hosts no shared server. | [Source](https://github.com/saurabhkundu1/signal-logger) |
-| **Siprise** | `com.applify.watertracker` | `1.0.0` | Track water intake and receive gentle reminders. Prepared; APK import is waiting for the signing-key migration. | [Source](https://github.com/saurabhkundu1/siprise-android) |
+| **Secure Pass** | `com.applify.securepass` | `1.5.0` | Offline password manager with AES-256-GCM encryption, biometric unlock, and entropy strength estimator. | [Source](https://github.com/saurabhkundu1/secure-password-manager) |
+| **Skycast** | `com.applify.skycast` | `1.0.1` | Modern weather application with interactive graphs and Open-Meteo visualization. | [Source](https://github.com/saurabhkundu1/skycast-weather) |
+| **ChronoSphere** | `com.applify.chronosphere` | `1.8.0` | Save world cities and track their local times with reactive StateFlow and home-screen widgets. | [Source](https://github.com/saurabhkundu1/chronosphere-time-app) |
+| **Signal Atlas** | `com.applify.signalatlas` | `1.4.0` | Opt-in cellular signal logging, structured JSON/CSV export, and approximate-area comparisons. | [Source](https://github.com/saurabhkundu1/signal-logger) |
+| **Siprise** | `com.applify.watertracker` | `1.5.0` | Track daily water intake, customize progress goals, and receive gentle reminders with TalkBack accessibility. | [Source](https://github.com/saurabhkundu1/siprise-android) |
+| **AdLoop** | `com.adloop.app` | `0.1.0` | Vertical swipeable ad feed prototype with verified reward credits and frequency pacing controls. | [Source](https://github.com/saurabhkundu1/adloop-ads) |
 
 **Signing-key migration:** New Secure Pass and Skycast releases keep their existing package IDs but use replacement app-signing certificates. Export Secure Pass data and uninstall each old app before installing its replacement. The Applify repository URL stays the same; Droidify may ask you to re-add the repository after its index-signing key changes.
 

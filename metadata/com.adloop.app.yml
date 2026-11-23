@@ -1,0 +1,14 @@
+Categories:
+  - Money
+  - Entertainment
+License: MIT
+WebSite: "https://github.com/saurabhkundu1/adloop-ads"
+SourceCode: "https://github.com/saurabhkundu1/adloop-ads"
+IssueTracker: "https://github.com/saurabhkundu1/adloop-ads/issues"
+Name: "AdLoop"
+Summary: "Earn reward credits while watching ads in a swipeable feed"
+Description: |-
+  An Android mobile prototype featuring a vertical swipeable ad feed with direct brand sponsor campaigns and provider-supplied mock ad placements. Viewers complete verified watch sessions to earn reward credits tracked in a local SQLite ledger, with smart in-app frequency and pacing controls to avoid ad fatigue.
+AutoName: "AdLoop"
+CurrentVersion: "0.1.0"
+CurrentVersionCode: 1

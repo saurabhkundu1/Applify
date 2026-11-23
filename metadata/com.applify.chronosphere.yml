@@ -1,6 +1,6 @@
 Categories:
   - Time
-License: Apache-2.0
+License: MIT
 WebSite: "https://github.com/saurabhkundu1/chronosphere-time-app"
 SourceCode: "https://github.com/saurabhkundu1/chronosphere-time-app"
 IssueTracker: "https://github.com/saurabhkundu1/chronosphere-time-app/issues"
@@ -9,5 +9,5 @@ Summary: "Save cities and check their time at a glance"
 Description: |-
   Offline world clock with searchable time zones, saved cities, local dates, and a home screen widget.
 AutoName: "ChronoSphere"
-CurrentVersion: "1.2.0"
-CurrentVersionCode: 3
+CurrentVersion: "1.8.0"
+CurrentVersionCode: 9
