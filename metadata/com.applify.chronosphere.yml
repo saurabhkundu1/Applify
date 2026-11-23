@@ -9,5 +9,5 @@ Summary: "Save cities and check their time at a glance"
 Description: |-
   Offline world clock with searchable time zones, saved cities, local dates, and a home screen widget.
 AutoName: "ChronoSphere"
-CurrentVersion: "1.8.0"
-CurrentVersionCode: 9
+CurrentVersion: "1.2.0"
+CurrentVersionCode: 3
