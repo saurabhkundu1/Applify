@@ -1,56 +1,209 @@
-<!-- auto-generated - fdroid index updates will overwrite this file -->
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-    <meta content="width=device-width; initial-scale=1.0; minimum-scale=0.5; maximum-scale=2.0; user-scalable=1;" name="viewport">
-    <title>
-   Applify
-    </title>
-    <base href="index.html">
-    <link href="index.css" rel="stylesheet" type="text/css">
-    <link href="icons/icon.png" rel="icon" type="image/png">
-    <link href="icons/icon.png" rel="shortcut icon" type="image/png">
-    <meta content="Applify" property="og:site_name">
-    <meta content="Applify" property="og:title">
-    <meta content property="og:determiner">
-    <meta content="Applify Official F-Droid Repository" property="og:description">
-    <meta content="index,nofollow" name="robots">
-  </head>
-  <body>
-    <h2>
-      Applify
-    </h2>
-    <div id="intro">
-      <p style="margin-bottom:.2em;">
-        <span style="float:right;width:100px;margin-left:.5em;">
-          <a href="index.png" title="QR: test">
-            <img alt="QR: test" src="index.png" width="100">
-          </a>
-        </span>
-        Applify Official F-Droid Repository
-        <br>
-        <br>
-        Currently it serves
-        <kbd>
-          6
-        </kbd>
-        apps. To add it to your F-Droid app, scan the QR code (click it to enlarge) or use this link:
-      </p>
-      <p class="center" style="margin-top:.5em">
-        <a href="https://fdroid.link/#https://saurabhkundu1.github.io/Applify/repo?fingerprint=18F030BE4407811F4DBC2C7D26A52A5261F1C921AEF9C33F350046AA2AE19077">
-          <code style="color:#000000;font-weight:bold;">
-            https://saurabhkundu1.github.io/Applify/repo
-          </code>
-        </a>
-      </p>
-      <p>
-        If you would like to manually verify the fingerprint (SHA-256) of the repository signing key, here it is:
-        <br>
-        <blockcode style="color:#000000;font-weight:bold;">
-          18 F0 30 BE 44 07 81 1F 4D BC 2C 7D 26 A5 2A 52 61 F1 C9 21 AE F9 C3 3F 35 00 46 AA 2A E1 90 77
-        </blockcode>
-      </p>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123c63">
+  <meta name="description" content="Applify Official F-Droid Repository — Free and Open Source Android apps by Saurabh Kundu.">
+  <title>Applify — F-Droid Repository</title>
+  <link href="icons/icon.png" rel="icon" type="image/png">
+  <link href="icons/icon.png" rel="shortcut icon" type="image/png">
+  <script>
+    (function() {
+      try {
+        const saved = localStorage.getItem("applify-theme");
+        if (saved === "dark" || saved === "light") {
+          document.documentElement.setAttribute("data-theme", saved);
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    :root { color-scheme: light dark; font: 16px/1.55 system-ui, sans-serif; }
+    body { margin: 0; background: #f3f6fa; color: #152337; }
+    header { padding: 2.5rem max(1.2rem, calc((100% - 960px)/2)); background: #123c63; color: white; }
+    .header-content { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.2rem; }
+    header h1 { margin: 0; font-size: clamp(2rem, 6vw, 3rem); }
+    .theme-switcher { display: inline-flex; background: rgba(0,0,0,0.22); border-radius: 2rem; padding: 4px; gap: 4px; align-self: flex-start; margin-top: .4rem; }
+    .theme-btn { background: transparent; border: none; color: #d0e4f7; padding: .4rem .75rem; border-radius: 1.5rem; font-size: .85rem; font-weight: 600; cursor: pointer; transition: background .18s, color .18s; }
+    .theme-btn:hover { color: white; }
+    .theme-btn.active { background: white; color: #123c63; }
+    main { max-width: 960px; margin: 0 auto; padding: 1.5rem 1.2rem 3rem; }
+    .repo-banner { display: flex; flex-wrap: wrap; gap: 1.5rem; background: white; border: 1px solid #d5dee8; border-radius: 1rem; padding: 1.5rem; margin: 1rem 0 2rem; align-items: center; }
+    .repo-banner img.qr { width: 120px; height: 120px; border-radius: 12px; border: 1px solid #e0e7ee; }
+    .repo-info { flex: 1; min-width: 260px; }
+    .actions { display: flex; flex-wrap: wrap; gap: .8rem; margin: 1rem 0; }
+    .button { display: inline-block; padding: .7rem 1rem; border-radius: .55rem; background: #1769aa; color: white; text-decoration: none; font-weight: 650; }
+    .button.secondary { background: #e2ecf5; color: #123c63; }
+    .apps-count { display: inline-block; background: #1769aa; color: white; padding: 2px 10px; border-radius: 1rem; font-weight: bold; font-size: 0.9rem; }
+    .apps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 390px), 1fr)); gap: 1rem; margin-top: 1rem; }
+    article { display: flex; gap: 1rem; padding: 1.2rem; border: 1px solid #d5dee8; border-radius: .8rem; background: white; }
+    article img { width: 64px; height: 64px; border-radius: 14px; flex: 0 0 64px; }
+    article h3 { margin: 0; font-size: 1.2rem; }
+    article p { margin: .3rem 0 .8rem; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; background: #e3f2fd; color: #0d47a1; margin-left: 6px; }
+    .links { display: flex; flex-wrap: wrap; gap: 1rem; }
+    a { color: #075c9f; }
+    code { overflow-wrap: anywhere; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; }
+    footer { padding: 2rem 1.5rem; text-align: center; color: #526173; font-size: 0.9rem; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) body { background: #101821; color: #e6edf5; }
+      :root:not([data-theme="light"]) article,
+      :root:not([data-theme="light"]) .repo-banner { background: #182431; border-color: #34485a; }
+      :root:not([data-theme="light"]) .button.secondary { background: #20374c; color: #e6edf5; }
+      :root:not([data-theme="light"]) a { color: #8bc8ff; }
+      :root:not([data-theme="light"]) footer { color: #a7b5c4; }
+      :root:not([data-theme="light"]) code { background: rgba(255,255,255,0.1); }
+      :root:not([data-theme="light"]) .badge { background: #1e3a5f; color: #90caf9; }
+    }
+    :root[data-theme="dark"] body { background: #101821; color: #e6edf5; }
+    :root[data-theme="dark"] article,
+    :root[data-theme="dark"] .repo-banner { background: #182431; border-color: #34485a; }
+    :root[data-theme="dark"] .button.secondary { background: #20374c; color: #e6edf5; }
+    :root[data-theme="dark"] a { color: #8bc8ff; }
+    :root[data-theme="dark"] footer { color: #a7b5c4; }
+    :root[data-theme="dark"] code { background: rgba(255,255,255,0.1); }
+    :root[data-theme="dark"] .badge { background: #1e3a5f; color: #90caf9; }
+    :root[data-theme="dark"] .theme-btn.active { background: #8bc8ff; color: #101821; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div>
+        <h1>Applify Repository</h1>
+        <p>Official F-Droid-compatible repository by Saurabh Kundu · Serves 6 Applications</p>
+      </div>
+      <div class="theme-switcher" role="radiogroup" aria-label="Theme mode selection">
+        <button type="button" class="theme-btn" role="radio" data-theme-val="light" aria-checked="false" title="Light theme">☀️ Light</button>
+        <button type="button" class="theme-btn" role="radio" data-theme-val="dark" aria-checked="false" title="Dark theme">🌙 Dark</button>
+        <button type="button" class="theme-btn active" role="radio" data-theme-val="auto" aria-checked="true" title="Follow system theme">💻 Auto</button>
+      </div>
     </div>
-  </body>
+  </header>
+  <main>
+    <div class="repo-banner">
+      <img src="index.png" alt="Repository QR Code" class="qr">
+      <div class="repo-info">
+        <h2 style="margin-top:0;">Connect with Droid-ify or F-Droid</h2>
+        <p>Scan the QR code from your phone or tap the button below to add this repository directly to Droid-ify, F-Droid, or Neo Store.</p>
+        <div class="actions">
+          <a class="button" href="https://fdroid.link/#https://saurabhkundu1.github.io/Applify/repo?fingerprint=18F030BE4407811F4DBC2C7D26A52A5261F1C921AEF9C33F350046AA2AE19077">Add to F-Droid / Droid-ify</a>
+          <a class="button secondary" href="../">Applify Home Page</a>
+        </div>
+        <p style="font-size:0.9rem;margin-bottom:0;">Repository URL: <code>https://saurabhkundu1.github.io/Applify/repo</code></p>
+        <p style="font-size:0.85rem;color:#788;">Signing SHA-256: <code>18 F0 30 BE 44 07 81 1F 4D BC 2C 7D 26 A5 2A 52 61 F1 C9 21 AE F9 C3 3F 35 00 46 AA 2A E1 90 77</code></p>
+      </div>
+    </div>
+
+    <h2>Hosted Applications <span class="apps-count">6 Apps</span></h2>
+    <p>Browse the latest release APKs currently available in the repository index.</p>
+
+    <div class="apps">
+      <!-- SecurePass -->
+      <article data-package="com.applify.securepass">
+        <img src="com.applify.securepass/en-US/icon.png" alt="Secure Pass icon">
+        <div>
+          <h3>Secure Pass <span class="badge">v1.5.1</span></h3>
+          <p>Offline password manager with biometric unlock, 1-tap quick copy, card strength pills, reuse alerts, filter chips, and vault security audit.</p>
+          <div class="links">
+            <a class="button" href="com.applify.securepass_7.apk">Download APK</a>
+            <a href="https://github.com/saurabhkundu1/secure-password-manager" target="_blank">Source</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- ChronoSphere -->
+      <article data-package="com.applify.chronosphere">
+        <img src="com.applify.chronosphere/en-US/icon.png" alt="ChronoSphere icon">
+        <div>
+          <h3>ChronoSphere <span class="badge">v1.8.1</span></h3>
+          <p>World clock with interactive time travel scrubbing (-12h to +12h), Day ☀️ / Night 🌙 city badges, meeting planner, and home-screen widget.</p>
+          <div class="links">
+            <a class="button" href="com.applify.chronosphere_10.apk">Download APK</a>
+            <a href="https://github.com/saurabhkundu1/chronosphere-time-app" target="_blank">Source</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Signal Atlas -->
+      <article data-package="com.applify.signalatlas">
+        <img src="com.applify.signalatlas/en-US/icon.png" alt="Signal Atlas icon">
+        <div>
+          <h3>Signal Atlas <span class="badge">v1.4.1</span></h3>
+          <p>Private cellular signal logger with real-time reception badge, network technology analytics (% 5G, % 4G), and OpenStreetMap export.</p>
+          <div class="links">
+            <a class="button" href="com.applify.signalatlas_6.apk">Download APK</a>
+            <a href="https://github.com/saurabhkundu1/signal-logger" target="_blank">Source</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Skycast -->
+      <article data-package="com.applify.skycast">
+        <img src="com.applify.skycast/en-US/icon.png" alt="Skycast icon">
+        <div>
+          <h3>Skycast <span class="badge">v1.0.2</span></h3>
+          <p>Modern weather forecasting app with Outdoor Comfort & Activity Insights, Feels-Like & Wind metrics, and Open-Meteo data visualization.</p>
+          <div class="links">
+            <a class="button" href="com.applify.skycast_3.apk">Download APK</a>
+            <a href="https://github.com/saurabhkundu1/skycast-weather" target="_blank">Source</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Siprise -->
+      <article data-package="com.applify.watertracker">
+        <img src="com.applify.watertracker/en-US/icon.png" alt="Siprise icon">
+        <div>
+          <h3>Siprise <span class="badge">v1.5.0</span></h3>
+          <p>Offline daily hydration tracker with custom quick-log amounts, gentle daytime reminders, home screen widget, and TalkBack accessibility.</p>
+          <div class="links">
+            <a class="button" href="com.applify.watertracker_6.apk">Download APK</a>
+            <a href="https://github.com/saurabhkundu1/siprise-android" target="_blank">Source</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- AdLoop -->
+      <article data-package="com.adloop.app">
+        <img src="com.adloop.app/en-US/icon.png" alt="AdLoop icon">
+        <div>
+          <h3>AdLoop <span class="badge">v0.1.0</span></h3>
+          <p>Vertical video reward ads feed with smart frequency pacing, reward credits tracking, and interactive pacing dialog.</p>
+          <div class="links">
+            <a class="button" href="com.adloop.app_1.apk">Download APK</a>
+            <a href="https://github.com/saurabhkundu1/adloop-ads" target="_blank">Source</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+  <footer>Applify · Official F-Droid Repository · Hosted on GitHub Pages</footer>
+  <script>
+    const themeButtons = document.querySelectorAll(".theme-btn");
+    let activeTheme = "auto";
+    try { activeTheme = localStorage.getItem("applify-theme") || "auto"; } catch (e) {}
+
+    function applyThemeSelection(theme) {
+      if (theme === "dark" || theme === "light") {
+        document.documentElement.setAttribute("data-theme", theme);
+        try { localStorage.setItem("applify-theme", theme); } catch (e) {}
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+        try { localStorage.removeItem("applify-theme"); } catch (e) {}
+      }
+      themeButtons.forEach(btn => {
+        const matches = btn.dataset.themeVal === theme;
+        btn.classList.toggle("active", matches);
+        btn.setAttribute("aria-checked", matches ? "true" : "false");
+      });
+    }
+
+    applyThemeSelection(activeTheme);
+    themeButtons.forEach(btn => {
+      btn.addEventListener("click", () => applyThemeSelection(btn.dataset.themeVal));
+    });
+  </script>
+</body>
 </html>
