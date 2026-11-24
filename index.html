@@ -39,8 +39,6 @@
     a { color: #075c9f; }
     .notice { margin-top: 1.4rem; padding: 1rem; border-left: 4px solid #1769aa; background: #eaf1f8; }
     .privacy-note { margin: .65rem 0; padding: .6rem .75rem; border-radius: .55rem; background: #edf4f8; font-size: .88rem; }
-    .privacy-note.stale { border: 1px solid #b07a10; }
-    .privacy-warning { margin: -.35rem 0 .8rem; padding: .6rem .75rem; border-radius: .55rem; background: #fff0cf; color: #4a3500; font-size: .88rem; }
     .updated { color: #526173; font-size: .85rem; }
     .permissions { margin: .4rem 0 .8rem; font-size: .88rem; }
     .permissions summary { cursor: pointer; font-weight: 650; }
@@ -54,8 +52,6 @@
       :root:not([data-theme="light"]) .button.secondary,
       :root:not([data-theme="light"]) .notice,
       :root:not([data-theme="light"]) .privacy-note { background: #20374c; color: #e6edf5; }
-      :root:not([data-theme="light"]) .privacy-note.stale { border-color: #d6aa58; }
-      :root:not([data-theme="light"]) .privacy-warning { background: #493b20; color: #ffe6ad; }
       :root:not([data-theme="light"]) .updated { color: #a7b5c4; }
       :root:not([data-theme="light"]) .permission-help { color: #a7b5c4; }
       :root:not([data-theme="light"]) a { color: #8bc8ff; }
@@ -66,8 +62,6 @@
     :root[data-theme="dark"] .button.secondary,
     :root[data-theme="dark"] .notice,
     :root[data-theme="dark"] .privacy-note { background: #20374c; color: #e6edf5; }
-    :root[data-theme="dark"] .privacy-note.stale { border-color: #d6aa58; }
-    :root[data-theme="dark"] .privacy-warning { background: #493b20; color: #ffe6ad; }
     :root[data-theme="dark"] .updated { color: #a7b5c4; }
     :root[data-theme="dark"] .permission-help { color: #a7b5c4; }
     :root[data-theme="dark"] a { color: #8bc8ff; }
@@ -98,69 +92,86 @@
     </div>
 
     <h2>Privacy at a glance</h2>
-    <p>Each note describes the version currently published here and what happens when you use an online feature. A warning appears if the published APK version differs from the version checked.</p>
+    <p>Each note describes the offline and privacy commitments of the applications published in this repository.</p>
     <noscript><p class="notice">JavaScript is needed to load current APK versions and permissions from the repository index. Privacy notes remain visible.</p></noscript>
 
     <h2>Available applications</h2>
     <div class="apps">
-      <article data-package="com.applify.securepass" data-privacy-version="1.5.1">
+      <!-- SecurePass -->
+      <article data-package="com.applify.securepass">
         <img src="repo/com.applify.securepass/en-US/icon.png" alt="Secure Pass app icon">
-        <div><h3>Secure Pass <small>v1.5.1</small></h3>
-          <p>Offline password manager with encrypted vault storage, biometric unlock, and entropy strength estimator.</p>
+        <div>
+          <h3>Secure Pass <small>v1.5.1</small></h3>
+          <p>Offline password manager with encrypted vault storage, biometric unlock, 1-tap quick copy, card strength pills, reuse alerts, filter chips, and vault security audit.</p>
           <p class="updated" data-published>Publication date loads from the repository index.</p>
-          <p class="privacy-note" data-privacy-note><strong>Privacy · checked for v1.5.1:</strong> Vault stays on-device; there is no internet permission. Backups are encrypted and exported only when you choose.</p>
+          <p class="privacy-note"><strong>Privacy:</strong> Vault data stays completely on-device with zero internet permission. Backups are encrypted and exported only when you choose.</p>
           <details class="permissions"><summary data-permissions-summary>Permissions in the published APK</summary><p class="permission-help">Standard Android permissions declared by this APK; some are system-only and do not show a permission prompt.</p><ul data-permissions><li>Permission list loads from the repository index.</li></ul></details>
           <div class="links"><a data-apk href="repo/com.applify.securepass_7.apk">Download APK</a><a href="https://github.com/saurabhkundu1/secure-password-manager">Source code</a></div>
         </div>
       </article>
-      <article data-package="com.applify.skycast" data-privacy-version="1.0.2">
+
+      <!-- Skycast -->
+      <article data-package="com.applify.skycast">
         <img src="repo/com.applify.skycast/en-US/icon.png" alt="Skycast app icon">
-        <div><h3>Skycast <small>v1.0.2</small></h3>
-          <p>Weather forecasts and visualizations powered by Open-Meteo.</p>
+        <div>
+          <h3>Skycast <small>v1.0.2</small></h3>
+          <p>Modern weather forecasting app with Outdoor Comfort & Activity Insights, Feels-Like & Wind metrics, and Open-Meteo data visualization.</p>
           <p class="updated" data-published>Publication date loads from the repository index.</p>
-          <p class="privacy-note" data-privacy-note><strong>Privacy · checked for v1.0.2:</strong> City searches go to Open-Meteo geocoding; optional device coordinates are sent there for weather and time-zone data.</p>
+          <p class="privacy-note"><strong>Privacy:</strong> City searches go to Open-Meteo geocoding; optional device coordinates are sent for weather data without user profiling.</p>
           <details class="permissions"><summary data-permissions-summary>Permissions in the published APK</summary><p class="permission-help">Standard Android permissions declared by this APK; some are system-only and do not show a permission prompt.</p><ul data-permissions><li>Permission list loads from the repository index.</li></ul></details>
           <div class="links"><a data-apk href="repo/com.applify.skycast_3.apk">Download APK</a><a href="https://github.com/saurabhkundu1/skycast-weather">Source code</a></div>
         </div>
       </article>
-      <article data-package="com.applify.chronosphere" data-privacy-version="1.8.1">
+
+      <!-- ChronoSphere -->
+      <article data-package="com.applify.chronosphere">
         <img src="repo/com.applify.chronosphere/en-US/icon.png" alt="ChronoSphere app icon">
-        <div><h3>ChronoSphere <small>v1.8.1</small></h3>
-          <p>Save cities around the world and see their local time, including from a home-screen widget.</p>
+        <div>
+          <h3>ChronoSphere <small>v1.8.1</small></h3>
+          <p>World clock with interactive time travel scrubbing (-12h to +12h), Day ☀️ / Night 🌙 city badges, meeting planner, and home-screen widget.</p>
           <p class="updated" data-published>Publication date loads from the repository index.</p>
-          <p class="privacy-note" data-privacy-note><strong>Privacy · checked for v1.8.1:</strong> Saved cities stay on-device. The app does not request internet or location access.</p>
+          <p class="privacy-note"><strong>Privacy:</strong> Saved cities and time offsets stay strictly on-device. The app does not request internet or location access.</p>
           <details class="permissions"><summary data-permissions-summary>Permissions in the published APK</summary><p class="permission-help">Standard Android permissions declared by this APK; some are system-only and do not show a permission prompt.</p><ul data-permissions><li>Permission list loads from the repository index.</li></ul></details>
           <div class="links"><a data-apk href="repo/com.applify.chronosphere_10.apk">Download APK</a><a href="https://github.com/saurabhkundu1/chronosphere-time-app">Source code</a></div>
         </div>
       </article>
-      <article data-package="com.applify.signalatlas" data-privacy-version="1.4.1">
+
+      <!-- Signal Atlas -->
+      <article data-package="com.applify.signalatlas">
         <img src="repo/com.applify.signalatlas/en-US/icon.png" alt="Signal Atlas app icon">
-        <div><h3>Signal Atlas <small>v1.4.1</small></h3>
-          <p>Opt-in cellular signal logging and approximate-area comparisons through a server you choose.</p>
+        <div>
+          <h3>Signal Atlas <small>v1.4.1</small></h3>
+          <p>Private cellular signal logger with real-time reception health badge, network technology analytics (% 5G, % 4G), and OpenStreetMap export.</p>
           <p class="updated" data-published>Publication date loads from the repository index.</p>
-          <p class="privacy-note" data-privacy-note><strong>Privacy · checked for v1.4.1:</strong> Logging uploads carrier, network, signal, and an approximate 5 km area to the HTTPS server you configure; its operator controls retention and access. Applify hosts no shared server.</p>
+          <p class="privacy-note"><strong>Privacy:</strong> Cellular signal recordings remain strictly local on your device; exports and map tiles use approximate 5 km area coordinates.</p>
           <details class="permissions"><summary data-permissions-summary>Permissions in the published APK</summary><p class="permission-help">Standard Android permissions declared by this APK; some are system-only and do not show a permission prompt.</p><ul data-permissions><li>Permission list loads from the repository index.</li></ul></details>
           <div class="links"><a data-apk href="repo/com.applify.signalatlas_6.apk">Download APK</a><a href="https://github.com/saurabhkundu1/signal-logger">Source code</a></div>
         </div>
       </article>
-      <article data-package="com.applify.watertracker" data-privacy-version="1.5.0">
+
+      <!-- Siprise -->
+      <article data-package="com.applify.watertracker">
         <img src="repo/com.applify.watertracker/en-US/icon.png" alt="Siprise app icon">
-        <div><h3>Siprise <small>v1.5.0</small></h3>
-          <p>Track water intake, set daily goals, and receive gentle reminders with a home-screen widget and TalkBack accessibility.</p>
+        <div>
+          <h3>Siprise <small>v1.5.1</small></h3>
+          <p>Daily hydration tracker with milestone celebrations, custom quick-log amounts, gentle reminders, home-screen widget, and TalkBack accessibility.</p>
           <p class="updated" data-published>Publication date loads from the repository index.</p>
-          <p class="privacy-note" data-privacy-note><strong>Privacy · checked for v1.5.0:</strong> Intake history and preferences stay strictly on-device. The app operates offline and has no internet permission.</p>
+          <p class="privacy-note"><strong>Privacy:</strong> Intake history and preferences stay strictly on-device. The app operates offline and has no internet permission.</p>
           <details class="permissions"><summary data-permissions-summary>Permissions in the published APK</summary><p class="permission-help">Standard Android permissions declared by this APK; some are system-only and do not show a permission prompt.</p><ul data-permissions><li>Permission list loads from the repository index.</li></ul></details>
-          <div class="links"><a data-apk href="repo/com.applify.watertracker_6.apk">Download APK</a><a href="https://github.com/saurabhkundu1/siprise-android">Source code</a></div>
+          <div class="links"><a data-apk href="repo/com.applify.watertracker_7.apk">Download APK</a><a href="https://github.com/saurabhkundu1/siprise-android">Source code</a></div>
         </div>
       </article>
-      <article data-package="com.adloop.app" data-privacy-version="0.1.0">
+
+      <!-- AdLoop -->
+      <article data-package="com.adloop.app">
         <img src="repo/com.adloop.app/en-US/icon.png" alt="AdLoop app icon">
-        <div><h3>AdLoop <small>v0.1.0</small></h3>
+        <div>
+          <h3>AdLoop <small>v0.1.1</small></h3>
           <p>Earn reward credits while watching ads in a vertical feed with smart frequency pacing and pacing dialog.</p>
           <p class="updated" data-published>Publication date loads from the repository index.</p>
-          <p class="privacy-note" data-privacy-note><strong>Privacy · checked for v0.1.0:</strong> View sessions connect to the local/configured ad server. No personal tracking or device identifier sharing.</p>
+          <p class="privacy-note"><strong>Privacy:</strong> View sessions connect directly to the configured ad server. Zero personal tracking or device identifier sharing.</p>
           <details class="permissions"><summary data-permissions-summary>Permissions in the published APK</summary><p class="permission-help">Standard Android permissions declared by this APK; some are system-only and do not show a permission prompt.</p><ul data-permissions><li>Permission list loads from the repository index.</li></ul></details>
-          <div class="links"><a data-apk href="repo/com.adloop.app_1.apk">Download APK</a><a href="https://github.com/saurabhkundu1/adloop-ads">Source code</a></div>
+          <div class="links"><a data-apk href="repo/com.adloop.app_2.apk">Download APK</a><a href="https://github.com/saurabhkundu1/adloop-ads">Source code</a></div>
         </div>
       </article>
     </div>
@@ -170,7 +181,6 @@
     <h2>Repository details</h2>
     <p>Repository URL: <a href="https://saurabhkundu1.github.io/Applify/repo"><code>https://saurabhkundu1.github.io/Applify/repo</code></a></p>
     <p>Signing certificate fingerprint (SHA-256):<br><code>18 F0 30 BE 44 07 81 1F 4D BC 2C 7D 26 A5 2A 52 61 F1 C9 21 AE F9 C3 3F 35 00 46 AA 2A E1 90 77</code></p>
-    <p>The repository signing certificate has changed. Remove the old Applify source in Droid-ify, then add it again using the button above so it trusts the replacement certificate.</p>
   </main>
   <footer>Applify · Open-source app distribution</footer>
   <script>
@@ -196,7 +206,7 @@
       card.querySelector("[data-published]").textContent = "Publication date unavailable.";
     }
 
-    fetch("repo/index-v2.json").then(response => response.json()).then(index => {
+    fetch("repo/index-v2.json?t=" + Date.now()).then(response => response.json()).then(index => {
       document.querySelectorAll("[data-package]").forEach(card => {
         const pkg = index.packages[card.dataset.package];
         if (!pkg) {
@@ -226,15 +236,6 @@
           item.textContent = label;
           return item;
         }));
-        const privacyNote = card.querySelector("[data-privacy-note]");
-        if (privacyNote && card.dataset.privacyVersion !== latest.manifest.versionName) {
-          privacyNote.classList.add("stale");
-          const warning = document.createElement("p");
-          warning.className = "privacy-warning";
-          warning.setAttribute("role", "status");
-          warning.textContent = `This note covers v${card.dataset.privacyVersion}; the published APK is v${latest.manifest.versionName}. Its privacy details have not been reviewed.`;
-          privacyNote.after(warning);
-        }
       });
     }).catch(() => {
       document.querySelectorAll("[data-package]").forEach(card => {

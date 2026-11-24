@@ -1,6 +1,6 @@
 # Applify 📱
 
-> Centralized Android Application Distribution Hub & F-Droid Store by **Saurabh Kundu**.
+> Centralized Android Application Distribution Hub & F-Droid Repository by **Saurabh Kundu**.
 
 [![Deploy F-Droid Repo](https://github.com/saurabhkundu1/Applify/actions/workflows/deploy-fdroid-pages.yml/badge.svg)](https://github.com/saurabhkundu1/Applify/actions/workflows/deploy-fdroid-pages.yml)
 [![F-Droid Compatible](https://img.shields.io/badge/F--Droid-Compatible-blue?logo=f-droid)](https://saurabhkundu1.github.io/Applify/repo)
@@ -10,17 +10,16 @@
 
 ## 📌 About Applify
 
-**Applify** is an open-source, self-hosted distribution repository for all Android applications developed by Saurabh Kundu. Built on top of **GitHub Pages**, **GitHub Actions**, and **F-Droid Server**, Applify delivers automated, privacy-first software updates directly to your favorite F-Droid client (such as **Droid-ify**, **Neo Store**, **F-Droid**, or **Obtainium**).
+**Applify** is an open-source, self-hosted distribution repository for Android applications developed by Saurabh Kundu. Powered by **GitHub Pages**, **GitHub Actions**, and **F-Droid Server**, Applify delivers automated, privacy-first software updates directly to your favorite F-Droid client (such as **Droid-ify**, **Neo Store**, **F-Droid**, or **Obtainium**).
 
 ### ✨ Key Highlights
 
 - **📱 Native F-Droid Protocol**: Full compatibility with F-Droid v1 & v2 JSON/XML index standards, `fdroidrepo://` deep linking, and QR code scanning.
-- **🔄 Automated Release CI/CD**: Automatically triggered via `repository_dispatch` when a new release is published in source app repositories, updating F-Droid indices and GitHub Pages without human intervention.
-- **🛡️ Release Verification**: Incoming APKs are checked for ZIP integrity, a valid Android signature, and package/version metadata before indexing.
-- **🔒 Transparent Distribution**: Published APKs are listed with their package metadata and source repository links.
-- **🛂 Permission Transparency**: App cards list Android permissions from the currently published APK manifest, using plain-language labels for common permissions.
-- **🗓️ Release Freshness**: App cards show when their current APK was added to the repository, using the published index date.
-- **🔎 Privacy at a Glance**: Each app card summarizes what stays local and which providers receive data, if any; a warning appears when the published APK version differs from the version reviewed.
+- **🔄 Automated Release CI/CD**: Automatically triggered upon push and dispatch, updating F-Droid indices and GitHub Pages without human intervention.
+- **🛡️ Release Verification**: All APKs are verified for ZIP integrity, single-signature consistency, and package/version metadata before indexing.
+- **🔒 Transparent Distribution**: Published APKs are listed with their package metadata, permissions, and direct source repository links.
+- **🧭 Permission Transparency**: App cards list Android permissions from the published APK manifest with clear explanations.
+- **🔍 Privacy at a Glance**: Each app card clearly outlines local data policies and third-party interactions.
 
 ---
 
@@ -28,14 +27,12 @@
 
 | Application | Package ID | Version | Description | Links |
 | :--- | :--- | :--- | :--- | :--- |
-| **Secure Pass** | `com.applify.securepass` | `1.5.0` | Offline password manager with AES-256-GCM encryption, biometric unlock, and entropy strength estimator. | [Source](https://github.com/saurabhkundu1/secure-password-manager) |
-| **Skycast** | `com.applify.skycast` | `1.0.1` | Modern weather application with interactive graphs and Open-Meteo visualization. | [Source](https://github.com/saurabhkundu1/skycast-weather) |
-| **ChronoSphere** | `com.applify.chronosphere` | `1.8.0` | Save world cities and track their local times with reactive StateFlow and home-screen widgets. | [Source](https://github.com/saurabhkundu1/chronosphere-time-app) |
-| **Signal Atlas** | `com.applify.signalatlas` | `1.4.0` | Opt-in cellular signal logging, structured JSON/CSV export, and approximate-area comparisons. | [Source](https://github.com/saurabhkundu1/signal-logger) |
-| **Siprise** | `com.applify.watertracker` | `1.5.0` | Track daily water intake, customize progress goals, and receive gentle reminders with TalkBack accessibility. | [Source](https://github.com/saurabhkundu1/siprise-android) |
-| **AdLoop** | `com.adloop.app` | `0.1.0` | Vertical swipeable ad feed prototype with verified reward credits and frequency pacing controls. | [Source](https://github.com/saurabhkundu1/adloop-ads) |
-
-**Signing-key migration:** New Secure Pass and Skycast releases keep their existing package IDs but use replacement app-signing certificates. Export Secure Pass data and uninstall each old app before installing its replacement. The Applify repository URL stays the same; Droidify may ask you to re-add the repository after its index-signing key changes.
+| **Secure Pass** | `com.applify.securepass` | `1.5.1` | Offline password manager with AES-256-GCM encryption, biometric unlock, 1-tap quick copy, card strength pills, reuse alerts, filter chips, and vault audit. | [Source](https://github.com/saurabhkundu1/secure-password-manager) |
+| **Skycast** | `com.applify.skycast` | `1.0.2` | Modern weather app with Outdoor Comfort & Activity Insights, Feels-Like & Wind metrics, and Open-Meteo visualization. | [Source](https://github.com/saurabhkundu1/skycast-weather) |
+| **ChronoSphere** | `com.applify.chronosphere` | `1.8.1` | World clock with interactive time travel scrubbing (-12h to +12h), Day ☀️ / Night 🌙 city badges, meeting planner, and home-screen widget. | [Source](https://github.com/saurabhkundu1/chronosphere-time-app) |
+| **Signal Atlas** | `com.applify.signalatlas` | `1.4.1` | Private cellular signal logger with real-time reception health badge, network technology analytics (% 5G, % 4G), and OpenStreetMap export. | [Source](https://github.com/saurabhkundu1/signal-logger) |
+| **Siprise** | `com.applify.watertracker` | `1.5.1` | Daily hydration tracker with daily goal-achieved celebration cards, custom quick-log amounts, gentle reminders, home-screen widget, and TalkBack accessibility. | [Source](https://github.com/saurabhkundu1/siprise-android) |
+| **AdLoop** | `com.adloop.app` | `0.1.1` | Vertical video reward ads feed with session campaigns, smart pacing status indicator, reward credits tracking, and interactive pacing dialog. | [Source](https://github.com/saurabhkundu1/adloop-ads) |
 
 ---
 
@@ -57,92 +54,15 @@
 2. Tap **Add this repository**.
 3. Choose or confirm your F-Droid-compatible client when prompted.
 
-### Option 2: QR Code Scan
-1. Open Droid-ify, Neo Store, or F-Droid on your device.
-2. Go to **Settings ➔ Repositories**.
-3. Tap the **QR Code** button and scan the QR code on the [Applify Web Portal](https://saurabhkundu1.github.io/Applify/).
-
-### Option 3: Manual Addition
-1. Open your F-Droid client app.
-2. Navigate to **Settings ➔ Repositories**.
-3. Tap **Add (+)**.
-4. Enter the repository URL:
-   ```
-   https://saurabhkundu1.github.io/Applify/repo
-   ```
-5. Save and refresh repositories.
-
----
-
-## ⚙️ Automated Integration Workflow
-
-When a source app repository (e.g. `saurabhkundu1/skycast-weather`) creates a new release, it dispatches a webhook event to Applify:
-
-```json
-{
-  "event_type": "new_release",
-  "client_payload": {
-    "source_repo": "saurabhkundu1/skycast-weather",
-    "package_name": "com.applify.skycast",
-    "version": "1.0.0",
-    "version_code": "1",
-    "tag": "Skycast-1.0.0",
-    "asset_name": "skycast-1.0.0.apk"
-  }
-}
-```
-
-The receiving GitHub Actions workflow (`deploy-fdroid-pages.yml`) executes the following steps:
-1. Validates payload fields and enforces repository/package whitelists.
-2. Downloads the published release asset from GitHub Releases.
-3. Requires `zip`, `apksigner`, and `aapt`, then checks ZIP integrity, APK signature, package ID, and version fields.
-4. Records the release tag's source commit and the imported APK's SHA-256 in `repo/provenance/`.
-5. Moves the verified APK into `repo/`.
-6. Executes `fdroid update` to regenerate signed F-Droid v1/v2 index JSON/XML files.
-7. Verifies that the v2 entry hash, size, and package count match `index-v2.json`, then synchronizes root and `repo/` index files.
-8. Commits generated repository updates and deploys a staged Pages site without temporary caches or signing material.
-
-Siprise release imports additionally require the `EXPECTED_WATERTRACKER_SIGNER_SHA256` repository variable. Its signer must be distinct from the F-Droid repository signer.
-
----
-
-## 📂 Repository Layout
-
-```
-Applify/
-├── .github/
-│   └── workflows/
-│       └── deploy-fdroid-pages.yml # Main deployment and release-dispatch handler
-├── metadata/
-│   ├── com.applify.securepass.yml  # Metadata definition for Secure Pass
-│   ├── com.applify.skycast.yml     # Metadata definition for Skycast
-│   ├── com.applify.chronosphere.yml # Metadata definition for ChronoSphere
-│   ├── com.applify.signalatlas.yml  # Metadata definition for Signal Atlas
-│   └── com.applify.watertracker.yml # Metadata definition for Siprise
-├── repo/
-│   ├── index-v1.json               # F-Droid v1 JSON index
-│   ├── index-v2.json               # F-Droid v2 JSON index
-│   ├── entry.json                  # F-Droid v2 entry header
-│   ├── index.xml                   # F-Droid XML fallback index
-│   ├── *.apk                       # Published APKs signed with each app's current trusted key
-│   └── provenance/                  # Release source commits and APK checksums
-├── index.html                      # Web catalogue & landing page
-├── README.md                       # Project documentation
-├── LICENSE                         # MIT license
-└── .nojekyll                       # GitHub Pages Jekyll bypass
-```
-
-The workflow creates its F-Droid `config.yml` and temporary keystore at the repository root during index generation. F-Droid cache files under `tmp/` are local build state and are excluded from the Pages artifact.
-
----
-
-## 👤 Author
-
-**Saurabh Kundu**  
-- GitHub: [@saurabhkundu1](https://github.com/saurabhkundu1)
+### Option 2: Add Manually
+1. Open **Droid-ify** or **F-Droid**.
+2. Go to **Settings** > **Repositories** > **+** (Add Repository).
+3. Paste: `https://saurabhkundu1.github.io/Applify/repo`
+4. Confirm with the repository fingerprint:
+   `18F030BE4407811F4DBC2C7D26A52A5261F1C921AEF9C33F350046AA2AE19077`
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This repository and its web assets are licensed under the [MIT License](LICENSE). Each hosted application has its own independent license documented in its source repository.

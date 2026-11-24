@@ -1,0 +1,10 @@
+{
+  "sourceRepository": "saurabhkundu1/siprise-android",
+  "sourceTag": "v1.5.1",
+  "sourceCommit": "17a401cac246029068a285bf52746b2d762aca49",
+  "releaseAsset": "com.applify.watertracker_7.apk",
+  "packageName": "com.applify.watertracker",
+  "versionName": "1.5.1",
+  "versionCode": 7,
+  "apkSha256": "6c4bfc00055e4933fe7687322f6559ac1e6183ce53c37739ecc5567de331c6d1"
+}
