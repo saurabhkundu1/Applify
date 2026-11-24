@@ -1,0 +1,10 @@
+{
+  "sourceRepository": "saurabhkundu1/signal-logger",
+  "sourceTag": "v1.4.1",
+  "sourceCommit": "277308b46ec582a563eb0596d116c4b2d2f23b64",
+  "releaseAsset": "Signal-Atlas-1.4.1.apk",
+  "packageName": "com.applify.signalatlas",
+  "versionName": "1.4.1",
+  "versionCode": 6,
+  "apkSha256": "d778b8b7b48fc39fcbeedbc790781381f99c9b2c6a5eadc026a8d503ab15a658"
+}
