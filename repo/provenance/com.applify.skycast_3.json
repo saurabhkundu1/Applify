@@ -1,0 +1,10 @@
+{
+  "sourceRepository": "saurabhkundu1/skycast-weather",
+  "sourceTag": "Skycast-1.0.2",
+  "sourceCommit": "85653f4af84c13a675652dfb09c737b449adae6a",
+  "releaseAsset": "skycast-1.0.2.apk",
+  "packageName": "com.applify.skycast",
+  "versionName": "1.0.2",
+  "versionCode": 3,
+  "apkSha256": "24e300bee4efbb830ee042fc53e8aa8cbf87a8bcc8ab4780e097c1c54b7acc3f"
+}
