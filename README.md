@@ -28,7 +28,7 @@
 | Application | Package ID | Version | Description | Links |
 | :--- | :--- | :--- | :--- | :--- |
 | **Secure Pass** | `com.applify.securepass` | `1.5.1` | Offline password manager with AES-256-GCM encryption, biometric unlock, 1-tap quick copy, card strength pills, reuse alerts, filter chips, and vault audit. | [Source](https://github.com/saurabhkundu1/secure-password-manager) |
-| **Skycast** | `com.applify.skycast` | `1.0.2` | Modern weather app with Outdoor Comfort & Activity Insights, Feels-Like & Wind metrics, and Open-Meteo visualization. | [Source](https://github.com/saurabhkundu1/skycast-weather) |
+| **Skycast** | `com.applify.skycast` | `1.0.3` | Modern weather app with responsive adaptive layout, Outdoor Comfort & Activity Insights, Feels-Like & Wind metrics, and Open-Meteo visualization. | [Source](https://github.com/saurabhkundu1/skycast-weather) |
 | **ChronoSphere** | `com.applify.chronosphere` | `1.8.1` | World clock with interactive time travel scrubbing (-12h to +12h), Day ☀️ / Night 🌙 city badges, meeting planner, and home-screen widget. | [Source](https://github.com/saurabhkundu1/chronosphere-time-app) |
 | **Signal Atlas** | `com.applify.signalatlas` | `1.4.1` | Private cellular signal logger with real-time reception health badge, network technology analytics (% 5G, % 4G), and OpenStreetMap export. | [Source](https://github.com/saurabhkundu1/signal-logger) |
 | **Siprise** | `com.applify.watertracker` | `1.5.1` | Daily hydration tracker with daily goal-achieved celebration cards, custom quick-log amounts, gentle reminders, home-screen widget, and TalkBack accessibility. | [Source](https://github.com/saurabhkundu1/siprise-android) |
