@@ -9,5 +9,5 @@ Summary: "Track water intake and receive gentle reminders"
 Description: |-
   Log quick or custom water amounts, undo the latest entry, set a daily goal, review recent progress, and schedule daytime reminders. Intake history and preferences stay on the device. Works offline and requires Android 13 or newer.
 AutoName: "Siprise"
-CurrentVersion: "1.5.1"
-CurrentVersionCode: 7
+CurrentVersion: "1.5.2"
+CurrentVersionCode: 8
